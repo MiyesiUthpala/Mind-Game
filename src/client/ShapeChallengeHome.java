@@ -99,7 +99,7 @@ public class ShapeChallengeHome extends JFrame {
         button.setFocusPainted(false);
         button.setBackground(new Color(70, 130, 180));
         button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Adjust padding
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         // Load and set the image
         try {
