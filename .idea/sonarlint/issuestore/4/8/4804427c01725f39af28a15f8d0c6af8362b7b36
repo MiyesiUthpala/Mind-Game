@@ -1,0 +1,25 @@
+
+v
+java:S1192""TDefine a constant instead of duplicating this literal "A problem occured: " 4 times.(®ĞÀúÿÿÿÿ8ºÿß°2
+M
+java:S1948Q"+Make "myService" transient or serializable.(Å‘óĞúÿÿÿÿ8ğÿß°2
+S
+java:S1948W"1Make "backgroundImage" transient or serializable.(÷ˆ¨Šùÿÿÿÿ8ğÿß°2
+L	java:S106 "+Replace this use of System.out by a logger.(òşÚúøÿÿÿÿ8öÿß°2
+L	java:S106""+Replace this use of System.out by a logger.(®ĞÀúÿÿÿÿ8öÿß°2
+L	java:S106+"+Replace this use of System.out by a logger.(ëÎØÁıÿÿÿÿ8øÿß°2
+L	java:S106/"+Replace this use of System.out by a logger.(©¥‡ˆøÿÿÿÿ8øÿß°2
+L	java:S1067"+Replace this use of System.out by a logger.(®ĞÀúÿÿÿÿ8øÿß°2
+L	java:S106>"+Replace this use of System.out by a logger.(òşÚúøÿÿÿÿ8ùÿß°2
+L	java:S106@"+Replace this use of System.out by a logger.(®ĞÀúÿÿÿÿ8úÿß°2
+G	java:S106G"+Replace this use of System.out by a logger.(óššŸ8úÿß°2
+L	java:S106I"+Replace this use of System.out by a logger.(®ĞÀúÿÿÿÿ8üÿß°2
+^
+java:S1075^"ARefactor your code to get this URI from a customizable parameter.(¯î¦8„€ß°2
+j
+java:S3252£"LUse static access with "javax.swing.WindowConstants" for "DISPOSE_ON_CLOSE".(ä…¼½8ˆå´á°2
+M	java:S106¹"+Replace this use of System.out by a logger.(éµ½úÿÿÿÿ8‹å´á°2
+H	java:S106º"+Replace this use of System.out by a logger.(‚·¿¤8Œå´á°2
+H	java:S106»"+Replace this use of System.out by a logger.(·¢Ìâ8Œå´á°2
+H	java:S106À"+Replace this use of System.out by a logger.(óššŸ8å´á°2
+H	java:S106É"+Replace this use of System.out by a logger.(×ÊÛ8å´á°2
