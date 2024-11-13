@@ -11,7 +11,7 @@ public class ShapeChallengeHome extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public ShapeChallengeHome (){
-        JFrame newPage = new JFrame("Shape Home Page");
+        JFrame newPage = new JFrame("Shape Challenge Home Page");
 
         // Set new page size to desktop size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -71,6 +71,16 @@ public class ShapeChallengeHome extends JFrame {
             try {
                 newPage.dispose();
                 ShapeChallengePage shapeChallengePage = new ShapeChallengePage();
+            } catch (Exception ex) {
+                System.out.println("A problem occurred: " + ex.toString());
+                ex.printStackTrace();
+            }
+        });
+
+        btnFeature5.addActionListener(e -> {
+            try {
+                newPage.dispose();
+                ShapeHowToPlay shapeHowToPlay = new ShapeHowToPlay();
             } catch (Exception ex) {
                 System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();

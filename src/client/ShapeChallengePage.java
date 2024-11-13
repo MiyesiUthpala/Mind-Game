@@ -21,17 +21,9 @@ public class ShapeChallengePage {
         }
     }
 
-    String[] cardList = { //track cardNames
-            "darkness",
-            "double",
-            "fairy",
-            "fighting",
-            "fire",
-            "grass",
-            "lightning",
-            "metal",
-            "psychic",
-            "water"
+    String[] cardList = {
+            "darkness", "double", "fairy", "fighting", "fire",
+            "grass", "lightning", "metal", "psychic", "water"
     };
 
     int rows = 4;
@@ -39,54 +31,58 @@ public class ShapeChallengePage {
     int cardWidth = 120;
     int cardHeight = 200;
 
-    ArrayList<Card> cardSet; //create a deck of cards with cardNames and cardImageIcons
+    ArrayList<Card> cardSet;
     ImageIcon cardBackImageIcon;
-
-    int boardWidth = columns * cardWidth; //5*128 = 640px
-    int boardHeight = rows * cardHeight; //4*90 = 360px
 
     JFrame frame = new JFrame("Shape Challenge Cards");
     JLabel textLabel = new JLabel();
+    JLabel timerLabel = new JLabel("Time: 120s"); // Timer display
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
-    JPanel restartGamePanel = new JPanel();
-    JButton restartButton = new JButton();
+    JPanel logoutPanel = new JPanel();
+    JButton logoutButton = new JButton("Logout");
+
 
     int errorCount = 0;
+    int matchedCount = 0;
+    int totalPairs = cardList.length;
+    int errorLimit = 5;
+
     ArrayList<JButton> board;
     Timer hideCardTimer;
+    Timer gameTimer; // Game countdown timer
     boolean gameReady = false;
     JButton card1Selected;
     JButton card2Selected;
+
+    int timeRemaining = 120; // 120-second timer
+    int finalScore = 0;
 
     ShapeChallengePage() {
         setupCards();
         shuffleCards();
 
-        // Get screen dimensions
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int frameWidth = (int) (screenSize.width * 0.6); // 60% of screen width
-        int frameHeight = (int) (screenSize.height * 0.8); // 80% of screen height
-
-        // Set up the frame
-        frame.setSize(frameWidth, frameHeight);
+        frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
         frame.setLocationRelativeTo(null);
         frame.setResizable(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Set up the error text label
         textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
         textLabel.setText("Errors: " + errorCount);
 
-        textPanel.setPreferredSize(new Dimension(frameWidth, 40));
-        textPanel.add(textLabel);
+        timerLabel.setFont(new Font("Arial", Font.PLAIN, 22));
+        timerLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        textPanel.setLayout(new BorderLayout());
+        textPanel.setPreferredSize(new Dimension(800, 40));
+        textPanel.add(textLabel, BorderLayout.WEST);
+        textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
 
-        // Card game board
         board = new ArrayList<>();
-        boardPanel.setLayout(new GridLayout(rows, columns, 10, 10)); // Added spacing between cards
+        boardPanel.setLayout(new GridLayout(rows, columns, 10, 10));
         boardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         for (int i = 0; i < cardSet.size(); i++) {
@@ -101,22 +97,33 @@ public class ShapeChallengePage {
         }
         frame.add(boardPanel, BorderLayout.CENTER);
 
-        // Restart button
-        restartButton.setFont(new Font("Arial", Font.PLAIN, 18));
-        restartButton.setText("Restart Game");
-        restartButton.setPreferredSize(new Dimension(frameWidth, 40));
-        restartButton.setFocusable(false);
-        restartButton.setEnabled(false);
-        restartButton.addActionListener(new RestartButtonListener());
-        restartGamePanel.add(restartButton);
-        frame.add(restartGamePanel, BorderLayout.SOUTH);
+        logoutButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        logoutButton.setPreferredSize(new Dimension(800, 40));
+        logoutButton.setFocusable(false);
+        logoutButton.addActionListener(new LogoutButtonListener());
+        logoutPanel.add(logoutButton);
+        frame.add(logoutPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
 
-        // Start game with hide card timer
         hideCardTimer = new Timer(1500, new HideCardsListener());
         hideCardTimer.setRepeats(false);
         hideCardTimer.start();
+
+        gameTimer = new Timer(1000, new GameTimerListener()); // Timer for countdown
+        gameTimer.start();
+    }
+
+    private class GameTimerListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            timeRemaining--;
+            timerLabel.setText("Time: " + timeRemaining + "s");
+            if (timeRemaining <= 0) {
+                gameTimer.stop();
+                showGameOverMessage();
+            }
+        }
     }
 
     private class CardClickListener implements ActionListener {
@@ -136,63 +143,148 @@ public class ShapeChallengePage {
                     card2Selected.setIcon(cardSet.get(index).cardImageIcon);
 
                     if (card1Selected.getIcon() != card2Selected.getIcon()) {
-                        errorCount += 1;
+                        errorCount++;
                         textLabel.setText("Errors: " + errorCount);
-                        hideCardTimer.start();
+
+                        if (errorCount > errorLimit) {
+                            showTryAgainMessage();
+                        } else {
+                            hideCardTimer.start();
+                        }
                     } else {
+                        matchedCount++;
+                        calculateScore(); // Calculate score after each match
                         card1Selected = null;
                         card2Selected = null;
+
+                        if (matchedCount == totalPairs) {
+                            gameTimer.stop();
+                            showSuccessMessage();
+                        }
                     }
                 }
             }
         }
     }
 
-    private class RestartButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (!gameReady) return;
-
-            gameReady = false;
-            restartButton.setEnabled(false);
-            card1Selected = null;
-            card2Selected = null;
-            shuffleCards();
-
-            // Reassign buttons with new cards
-            for (int i = 0; i < board.size(); i++) {
-                board.get(i).setIcon(cardSet.get(i).cardImageIcon);
-            }
-
-            errorCount = 0;
-            textLabel.setText("Errors: " + errorCount);
-            hideCardTimer.start();
+    private void calculateScore() {
+        int scorePerMatch;
+        switch (errorCount) {
+            case 0: scorePerMatch = 200; break;
+            case 1: scorePerMatch = 100; break;
+            case 2: scorePerMatch = 80; break;
+            case 3: scorePerMatch = 60; break;
+            case 4: scorePerMatch = 40; break;
+            case 5: scorePerMatch = 20; break;
+            default: scorePerMatch = 0; break;
         }
+        finalScore += scorePerMatch;
+    }
+
+    private void showSuccessMessage() {
+        JOptionPane.showMessageDialog(frame, "Congratulations! You finished the game!\nScore: " + finalScore, "Success", JOptionPane.INFORMATION_MESSAGE);
+        logoutButton.setEnabled(true); // Enable the logout button after game ends
+    }
+
+    private void showTryAgainMessage() {
+        JOptionPane.showMessageDialog(frame, "Too many errors. Try Again!", "Game Over", JOptionPane.WARNING_MESSAGE);
+        resetGame();
+    }
+
+    private void showGameOverMessage() {
+        JOptionPane.showMessageDialog(frame, "Time's up! Final Score: " + finalScore, "Time Over", JOptionPane.WARNING_MESSAGE);
+        resetGame();
     }
 
     private class HideCardsListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            hideCards();
+            if (card1Selected != null && card2Selected != null) {
+                card1Selected.setIcon(cardBackImageIcon);
+                card2Selected.setIcon(cardBackImageIcon);
+                card1Selected = null;
+                card2Selected = null;
+            }
+            // If not two cards selected, just flip all
+            else {
+                for (JButton cardButton : board) {
+                    cardButton.setIcon(cardBackImageIcon);
+                }
+                gameReady = true; // Allow player to start flipping cards
+            }
         }
+    }
+
+    private class LogoutButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!gameReady) return;
+
+            // Display logout confirmation message
+            int choice = JOptionPane.showConfirmDialog(
+                    frame,
+                    "You are logged out. Do you want to go back to the home page?",
+                    "Logged Out",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            if (choice == JOptionPane.OK_OPTION) {
+                frame.dispose(); // Close current game frame
+                new ShapeChallengeHome(); // Open new instance for the home page
+            }
+        }
+    }
+
+    void hideCards() {
+        if (gameReady && card1Selected != null && card2Selected != null) { //only flip 2 cards
+            card1Selected.setIcon(cardBackImageIcon);
+            card1Selected = null;
+            card2Selected.setIcon(cardBackImageIcon);
+            card2Selected = null;
+        }
+        else { //flip all cards face down
+            for (int i = 0; i < board.size(); i++) {
+                board.get(i).setIcon(cardBackImageIcon);
+            }
+            gameReady = true;
+            logoutButton.setEnabled(true);
+        }
+    }
+    void resetGame() {
+        gameReady = false;
+        //logoutButton.setEnabled(false);
+        card1Selected = null;
+        card2Selected = null;
+        matchedCount = 0;
+        errorCount = 0;
+        timeRemaining = 120;
+        finalScore = 0;
+        textLabel.setText("Errors: " + errorCount);
+        timerLabel.setText("Time: 120s");
+
+        shuffleCards();
+        for (int i = 0; i < board.size(); i++) {
+            board.get(i).setIcon(cardBackImageIcon);
+        }
+        hideCardTimer.start();
+        gameTimer.restart();
     }
 
     void setupCards() {
         cardSet = new ArrayList<Card>();
         for (String cardName : cardList) {
-            //load each card image
+            // Load each card image and scale it
             Image cardImg = new ImageIcon(getClass().getResource("../img/" + cardName + ".jpg")).getImage();
-            ImageIcon cardImageIcon = new ImageIcon(cardImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
-
-            //create card object and add to cardSet
+            ImageIcon cardImageIcon = new ImageIcon(cardImg.getScaledInstance(cardWidth, cardWidth, java.awt.Image.SCALE_SMOOTH)); // Setting width and height to be the same for square
             Card card = new Card(cardName, cardImageIcon);
             cardSet.add(card);
         }
-        cardSet.addAll(cardSet);
+        cardSet.addAll(cardSet); // Double the deck
 
-        //load the back card image
+        // Load the back card image with square dimensions
         Image cardBackImg = new ImageIcon(getClass().getResource("../img/back.jpg")).getImage();
-        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
+        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
     }
 
     void shuffleCards() {
@@ -208,19 +300,8 @@ public class ShapeChallengePage {
         System.out.println(cardSet);
     }
 
-    void hideCards() {
-        if (gameReady && card1Selected != null && card2Selected != null) { //only flip 2 cards
-            card1Selected.setIcon(cardBackImageIcon);
-            card1Selected = null;
-            card2Selected.setIcon(cardBackImageIcon);
-            card2Selected = null;
-        }
-        else { //flip all cards face down
-            for (int i = 0; i < board.size(); i++) {
-                board.get(i).setIcon(cardBackImageIcon);
-            }
-            gameReady = true;
-            restartButton.setEnabled(true);
-        }
+    public static void main(String[] args) {
+        new ShapeChallengePage();
     }
+
 }
