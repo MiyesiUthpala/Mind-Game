@@ -15,14 +15,18 @@ import java.awt.image.BufferedImage;
 
 public class LoginGUI extends JFrame implements ActionListener {
 
+    // Serial version UID for Serializable interface
     private static final long serialVersionUID = -1077856539035386635L;
     private LoginInterface myService = (LoginInterface) Naming.lookup("rmi://localhost:1099/LoginService");
     JButton btnHello = createStyledButton("Hello", "<html><b style='font-size:14px; color:white;'>Hello</b></html>");
     JButton btnLogin = createStyledButton("Login", "<html><b style='font-size:14px; color:white;'>Login</b></html>");
     JButton btnSecret = createStyledButton("Secret", "<html><b style='font-size:14px; color:white;'>Secret</b></html>");
     JButton btnLogout = createStyledButton("Logout", "<html><b style='font-size:14px; color:white;'>Logout</b></html>");
-    String mySessionCookie = "not set";
 
+    // Session cookie to store user session information
+    public static String mySessionCookie = "not set";
+
+    // Constructor to set up the login GUI
     public LoginGUI() throws MalformedURLException, NotBoundException, RemoteException {
         JFrame loginPage = new JFrame("Login Page");
 
@@ -107,6 +111,7 @@ public class LoginGUI extends JFrame implements ActionListener {
 
     // Action listener for the buttons
     public void actionPerformed(ActionEvent e) {
+        // Handle "Hello" button click
         if (e.getSource().equals(btnHello)) {
             try {
                 String result = myService.sayHello();
@@ -116,11 +121,12 @@ public class LoginGUI extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         } else if (e.getSource().equals(btnLogin)) {
-            String str = JOptionPane.showInputDialog("Please enter the password.");
+            String username = JOptionPane.showInputDialog("Please enter the username.");
+            String password = JOptionPane.showInputDialog("Please enter the password.");
             try {
-                String result = myService.login(str);
-                if (result.equals("wrong")) {
-                    JOptionPane.showMessageDialog(this, "Wrong Password. Try again!", "Login Error", JOptionPane.ERROR_MESSAGE);
+                String result = myService.login(username, password);
+                if (result.split("#")[0].equals("error")) {
+                    JOptionPane.showMessageDialog(this, result.split("#")[1], "Login Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     mySessionCookie = result;
                     new HomePage(); // Open the new page
@@ -129,6 +135,7 @@ public class LoginGUI extends JFrame implements ActionListener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            // Handle "Secret" button click
         } else if (e.getSource().equals(btnSecret)) {
             try {
                 String result = myService.getSecretMessage(mySessionCookie);
@@ -136,6 +143,7 @@ public class LoginGUI extends JFrame implements ActionListener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            // Handle "Logout" button click
         } else if (e.getSource().equals(btnLogout)) {
             try {
                 String result = myService.logout(mySessionCookie);
