@@ -11,7 +11,7 @@ public class ImageChallengeHome extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public ImageChallengeHome (){
-        JFrame newPage = new JFrame("Shape Challenge Home Page");
+        JFrame newPage = new JFrame("Image Challenge Home Page");
 
         // Set new page size to desktop size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -59,11 +59,9 @@ public class ImageChallengeHome extends JFrame {
 
         btnLogoutNewPage.addActionListener(e -> {
             try {
-                newPage.dispose();
-                LoginGUI loginGUI = new LoginGUI();
-                loginGUI.setVisible(true);
+                newPage.dispose(); // Close current frame
+                HomePage homePage = new HomePage(); // Redirect to home page
             } catch (Exception ex) {
-                System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();
             }
         });

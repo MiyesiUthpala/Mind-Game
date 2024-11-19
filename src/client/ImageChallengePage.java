@@ -231,7 +231,7 @@ public class ImageChallengePage {
 
             if (choice == JOptionPane.OK_OPTION) {
                 frame.dispose(); // Close current game frame
-                new ShapeChallengeHome(); // Open new instance for the home page
+                new ImageChallengeHome(); // Open new instance for the home page
             }
         }
     }

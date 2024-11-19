@@ -30,9 +30,17 @@ public class LoginGUI extends JFrame implements ActionListener {
     public LoginGUI() throws MalformedURLException, NotBoundException, RemoteException {
         JFrame loginPage = new JFrame("Login Page");
 
-        // Set new page size to desktop size
+        // Set the size of the JFrame relative to the desktop size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        loginPage.setSize(screenSize.width, screenSize.height);
+        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(loginPage.getGraphicsConfiguration());
+
+        // Calculate usable screen area (deduct taskbar or system reserved space)
+        int usableWidth = screenSize.width - screenInsets.left - screenInsets.right;
+        int usableHeight = screenSize.height - screenInsets.top - screenInsets.bottom;
+
+        // Set the frame size to match usable screen area
+        loginPage.setSize(usableWidth, usableHeight);
+        loginPage.setLocation(screenInsets.left, screenInsets.top);
         loginPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Set up the main panel with BorderLayout
@@ -71,10 +79,9 @@ public class LoginGUI extends JFrame implements ActionListener {
 
         // Position button panel on the left side of main panel
         mainPanel.add(buttonPanel, BorderLayout.WEST);
-        getContentPane().add(mainPanel);
+        loginPage.getContentPane().add(mainPanel);
 
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginPage.setVisible(true);
     }
 
     private static JButton createStyledButton(String text, String htmlText) {
@@ -109,7 +116,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         }
     }
 
-    // Action listener for the buttons
+    // Action listener for the button
     public void actionPerformed(ActionEvent e) {
         // Handle "Hello" button click
         if (e.getSource().equals(btnHello)) {
@@ -129,13 +136,15 @@ public class LoginGUI extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, result.split("#")[1], "Login Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     mySessionCookie = result;
-                    new HomePage(); // Open the new page
-                    this.dispose(); // Close the login page
+                    // Close the LoginGUI instance
+                    this.dispose(); // Dispose of the current LoginGUI window
+                    // Open the HomePage
+                    SwingUtilities.invokeLater(() -> new HomePage());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            // Handle "Secret" button click
+        // Handle "Secret" button click
         } else if (e.getSource().equals(btnSecret)) {
             try {
                 String result = myService.getSecretMessage(mySessionCookie);

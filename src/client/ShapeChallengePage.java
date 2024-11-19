@@ -1,12 +1,35 @@
 package client;
 
+import client.model.Score;
+import mindgameinterface.LoginInterface;
+import mindgameinterface.ScoreBoardInterface;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class ShapeChallengePage {
+
+    private ScoreBoardInterface myService;
+
+    {
+        try {
+            myService = (ScoreBoardInterface) Naming.lookup("rmi://localhost:1099/ScoreBoardService");
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     class Card {
         String cardName;
         ImageIcon cardImageIcon;
@@ -22,8 +45,8 @@ public class ShapeChallengePage {
     }
 
     String[] cardList = {
-            "darkness", "double", "fairy", "fighting", "fire",
-            "grass", "lightning", "metal", "psychic", "water"
+            "circle", "diamond", "hexagon", "octagon", "oval",
+            "pentagon", "rectangle", "square", "star", "triangle"
     };
 
     int rows = 4;
@@ -114,7 +137,7 @@ public class ShapeChallengePage {
         gameTimer.start();
     }
 
-    private class GameTimerListener implements ActionListener {
+    class GameTimerListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             timeRemaining--;
@@ -126,7 +149,7 @@ public class ShapeChallengePage {
         }
     }
 
-    private class CardClickListener implements ActionListener {
+    class CardClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!gameReady) return;
@@ -159,6 +182,15 @@ public class ShapeChallengePage {
 
                         if (matchedCount == totalPairs) {
                             gameTimer.stop();
+                            Score score = new Score();
+                            score.setPlayer_name(LoginGUI.mySessionCookie);
+                            score.setScore(finalScore);
+                            score.setGame("Shape Game");
+                            try {
+                                myService.addScore(score);
+                            } catch (RemoteException ex) {
+                                throw new RuntimeException(ex);
+                            }
                             showSuccessMessage();
                         }
                     }
@@ -196,7 +228,7 @@ public class ShapeChallengePage {
         resetGame();
     }
 
-    private class HideCardsListener implements ActionListener {
+    class HideCardsListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (card1Selected != null && card2Selected != null) {
@@ -215,7 +247,7 @@ public class ShapeChallengePage {
         }
     }
 
-    private class LogoutButtonListener implements ActionListener {
+    class LogoutButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!gameReady) return;

@@ -45,7 +45,7 @@ public class ShapeChallengeHome extends JFrame {
         buttonPanel.setOpaque(false); // Make button panel transparent
 
         // Create buttons with HTML text and images
-        JButton btnFeature4 = createStyledButtonWithImage("Game", "<html><b style='font-size:12px; color:white;'>Game</b></html>", "path_to_level1_image.png");
+        JButton btnFeature4 = createStyledButtonWithImage("Shape Challenge Game", "<html><b style='font-size:12px; color:white;'>Shape Challenge Game</b></html>", "path_to_level1_image.png");
         JButton btnFeature5 = createStyledButtonWithImage("How To Play", "<html><b style='font-size:12px; color:white;'>How To Play</b></html>", "path_to_level2_image.png");
         JButton btnFeature6 = createStyledButtonWithImage("Leaderboard", "<html><b style='font-size:12px; color:white;'>Leaderboard</b></html>", "path_to_level3_image.png");
         JButton btnLogoutNewPage = createStyledButton("Logout", "<html><b style='font-size:12px; color:white;'>Logout</b></html>");
@@ -59,11 +59,9 @@ public class ShapeChallengeHome extends JFrame {
 
         btnLogoutNewPage.addActionListener(e -> {
             try {
-                newPage.dispose();
-                LoginGUI loginGUI = new LoginGUI();
-                loginGUI.setVisible(true);
+                newPage.dispose(); // Close current frame
+                HomePage homePage = new HomePage(); // Redirect to home page
             } catch (Exception ex) {
-                System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();
             }
         });
@@ -81,6 +79,17 @@ public class ShapeChallengeHome extends JFrame {
             try {
                 newPage.dispose();
                 ShapeHowToPlay shapeHowToPlay = new ShapeHowToPlay();
+            } catch (Exception ex) {
+                System.out.println("A problem occurred: " + ex.toString());
+                ex.printStackTrace();
+            }
+        });
+
+        btnFeature6.addActionListener(e -> {
+            try {
+                newPage.dispose();
+                ShapeChallengeLeaderboard shapeChallengeLeaderboard = new ShapeChallengeLeaderboard();
+                shapeChallengeLeaderboard.setVisible(true);
             } catch (Exception ex) {
                 System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();

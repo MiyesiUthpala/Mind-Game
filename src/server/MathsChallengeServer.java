@@ -51,11 +51,9 @@ public class MathsChallengeServer {
      * @return a random game or null if a game cannot be found.
      */
     public MathsChallengeGame getRandomGame() {
-        // See http://marconrad.com/uob/tomato for details of usage of the api.
 
-//		String tomatoapi = "https://marcconrad.com/uob/tomato/api.php?out=csv&base64=yes";
-        String tomatoapi = "https://marcconrad.com/uob/banana/api.php?out=csv&base64=yes";
-        String dataraw = readUrl(tomatoapi);
+        String bananaapi = "https://marcconrad.com/uob/banana/api.php?out=csv&base64=yes";
+        String dataraw = readUrl(bananaapi);
         String[] data = dataraw.split(",");
 
         byte[] decodeImg = Base64.getDecoder().decode(data[0]);

@@ -29,7 +29,7 @@ public interface LoginInterface extends Remote {
      * @return
      * @throws RemoteException
      */
-    public String login(String password) throws RemoteException;
+    public String login(String username, String password) throws RemoteException;
 
     /**
      * Logout of the system.

@@ -7,6 +7,7 @@ import server.ScoreBoardService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class ShapeChallengeLeaderboard extends JFrame {
 
 
     // Constructor to set up the leaderboard window
-    public ShapeChallengeLeaderboard() {
+    public ShapeChallengeLeaderboard() throws RemoteException {
         super("Leaderboard");
 
         // Set up the frame size and behavior
@@ -48,12 +49,17 @@ public class ShapeChallengeLeaderboard extends JFrame {
     }
 
     // Method to load leaderboard data from the database
-    private void loadLeaderboardData() {
+    private void loadLeaderboardData() throws RemoteException {
 
         int rank = 1;
 
-        ScoreBoardInterface scoreBoardInterface = new ScoreBoardService();
-        List<Score> scoreList =  scoreBoardInterface.getScoreList();
+        ScoreBoardInterface scoreBoardInterface = null;
+        try {
+            scoreBoardInterface = new ScoreBoardService();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        List<Score> scoreList =  scoreBoardInterface.getScoreList("Shape Game");
        for (int i=0; i<scoreList.size(); i++){
             tableModel.addRow(new Object[]{rank++, scoreList.get(i).getPlayer_name(),scoreList.get(i).getScore()});
         };
@@ -62,7 +68,12 @@ public class ShapeChallengeLeaderboard extends JFrame {
     public static void main(String[] args) {
         // Launch the leaderboard window
         SwingUtilities.invokeLater(() -> {
-            ShapeChallengeLeaderboard shapeChallengeLeaderboard = new ShapeChallengeLeaderboard();
+            ShapeChallengeLeaderboard shapeChallengeLeaderboard = null;
+            try {
+                shapeChallengeLeaderboard = new ShapeChallengeLeaderboard();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
             shapeChallengeLeaderboard.setVisible(true);
         });
     }

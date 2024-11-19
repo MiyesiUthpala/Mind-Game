@@ -11,7 +11,7 @@ public class MathsChallengeHome extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public MathsChallengeHome (){
-        JFrame newPage = new JFrame("Shape Challenge Home Page");
+        JFrame newPage = new JFrame("Maths Challenge Home Page");
 
         // Set new page size to desktop size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -59,13 +59,13 @@ public class MathsChallengeHome extends JFrame {
 
         btnLogoutNewPage.addActionListener(e -> {
             try {
-                newPage.dispose();
-                LoginGUI loginGUI = new LoginGUI();
-                loginGUI.setVisible(true);
+                newPage.dispose(); // Close current frame
+                HomePage homePage = new HomePage(); // Redirect to home page
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
+
         btnFeature4.addActionListener(e -> {
             try {
                 newPage.dispose();
