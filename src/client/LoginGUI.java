@@ -15,33 +15,18 @@ import java.awt.image.BufferedImage;
 
 public class LoginGUI extends JFrame implements ActionListener {
 
-    // Serial version UID for Serializable interface
     private static final long serialVersionUID = -1077856539035386635L;
     private LoginInterface myService = (LoginInterface) Naming.lookup("rmi://localhost:1099/LoginService");
-    JButton btnHello = createStyledButton("Hello", "<html><b style='font-size:14px; color:white;'>Hello</b></html>");
     JButton btnLogin = createStyledButton("Login", "<html><b style='font-size:14px; color:white;'>Login</b></html>");
-    JButton btnSecret = createStyledButton("Secret", "<html><b style='font-size:14px; color:white;'>Secret</b></html>");
     JButton btnLogout = createStyledButton("Logout", "<html><b style='font-size:14px; color:white;'>Logout</b></html>");
+    static String mySessionCookie = "not set";
 
-    // Session cookie to store user session information
-    public static String mySessionCookie = "not set";
-
-    // Constructor to set up the login GUI
     public LoginGUI() throws MalformedURLException, NotBoundException, RemoteException {
-        JFrame loginPage = new JFrame("Login Page");
+        super("Login Page");
 
-        // Set the size of the JFrame relative to the desktop size
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(loginPage.getGraphicsConfiguration());
-
-        // Calculate usable screen area (deduct taskbar or system reserved space)
-        int usableWidth = screenSize.width - screenInsets.left - screenInsets.right;
-        int usableHeight = screenSize.height - screenInsets.top - screenInsets.bottom;
-
-        // Set the frame size to match usable screen area
-        loginPage.setSize(usableWidth, usableHeight);
-        loginPage.setLocation(screenInsets.left, screenInsets.top);
-        loginPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // Set JFrame to fullscreen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Set up the main panel with BorderLayout
         JPanel mainPanel = new BackgroundPanel();
@@ -57,21 +42,13 @@ public class LoginGUI extends JFrame implements ActionListener {
 
         // Set button sizes and alignment within button panel
         Dimension buttonSize = new Dimension(250, 50);
-        btnHello.setMaximumSize(buttonSize);
         btnLogin.setMaximumSize(buttonSize);
-        btnSecret.setMaximumSize(buttonSize);
         btnLogout.setMaximumSize(buttonSize);
 
         // Add buttons with spacing to button panel
-        buttonPanel.add(btnHello);
-        btnHello.addActionListener(this);
-        buttonPanel.add(Box.createVerticalStrut(15)); // Spacing between buttons
         buttonPanel.add(btnLogin);
         btnLogin.addActionListener(this);
-        buttonPanel.add(Box.createVerticalStrut(15));
-        buttonPanel.add(btnSecret);
-        btnSecret.addActionListener(this);
-        buttonPanel.add(Box.createVerticalStrut(15));
+        buttonPanel.add(Box.createVerticalStrut(15)); // Spacing between buttons
         buttonPanel.add(btnLogout);
         btnLogout.addActionListener(this);
 
@@ -79,9 +56,9 @@ public class LoginGUI extends JFrame implements ActionListener {
 
         // Position button panel on the left side of main panel
         mainPanel.add(buttonPanel, BorderLayout.WEST);
-        loginPage.getContentPane().add(mainPanel);
+        getContentPane().add(mainPanel);
 
-        loginPage.setVisible(true);
+        setVisible(true);
     }
 
     private static JButton createStyledButton(String text, String htmlText) {
@@ -116,43 +93,13 @@ public class LoginGUI extends JFrame implements ActionListener {
         }
     }
 
-    // Action listener for the button
+    // Action listener for the buttons
     public void actionPerformed(ActionEvent e) {
-        // Handle "Hello" button click
-        if (e.getSource().equals(btnHello)) {
-            try {
-                String result = myService.sayHello();
-                System.out.println("Result: " + result);
-            } catch (RemoteException ex) {
-                System.out.println("A problem occurred: " + ex.toString());
-                ex.printStackTrace();
-            }
-        } else if (e.getSource().equals(btnLogin)) {
-            String username = JOptionPane.showInputDialog("Please enter the username.");
-            String password = JOptionPane.showInputDialog("Please enter the password.");
-            try {
-                String result = myService.login(username, password);
-                if (result.split("#")[0].equals("error")) {
-                    JOptionPane.showMessageDialog(this, result.split("#")[1], "Login Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    mySessionCookie = result;
-                    // Close the LoginGUI instance
-                    this.dispose(); // Dispose of the current LoginGUI window
-                    // Open the HomePage
-                    SwingUtilities.invokeLater(() -> new HomePage());
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        // Handle "Secret" button click
-        } else if (e.getSource().equals(btnSecret)) {
-            try {
-                String result = myService.getSecretMessage(mySessionCookie);
-                System.out.println("Result: " + result);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            // Handle "Logout" button click
+        if (e.getSource().equals(btnLogin)) {
+            // Open the Login Input window with fields for username and password
+            LoginInputWindow loginInputWindow = new LoginInputWindow();
+            loginInputWindow.setVisible(true);
+            this.dispose(); // Close the login page
         } else if (e.getSource().equals(btnLogout)) {
             try {
                 String result = myService.logout(mySessionCookie);
@@ -164,6 +111,126 @@ public class LoginGUI extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) throws Exception {
-        new LoginGUI().setVisible(true);
+        new LoginGUI();
+    }
+
+    // Updated LoginInputWindow class
+    class LoginInputWindow extends JFrame implements ActionListener {
+        private JTextField usernameField;
+        private JPasswordField passwordField;
+        private JButton startButton;
+
+        public LoginInputWindow() {
+            setTitle("Enter Username and Password");
+            setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+            // Set the background image
+            ImageIcon originalIcon = new ImageIcon("C:/Users/miyes/OneDrive/Documents/Mind Game/background.jpg");
+            Image scaledImage = originalIcon.getImage().getScaledInstance(
+                    Toolkit.getDefaultToolkit().getScreenSize().width,
+                    Toolkit.getDefaultToolkit().getScreenSize().height,
+                    Image.SCALE_SMOOTH
+            );
+            JLabel background = new JLabel(new ImageIcon(scaledImage));
+            background.setLayout(new GridBagLayout()); // Use layout to center components
+
+            // Main container panel for centering
+            JPanel containerPanel = new JPanel(new GridBagLayout());
+            containerPanel.setOpaque(false); // Make it transparent to show the background
+
+            // Create a panel to simulate the shadow effect
+            JPanel shadowBox = new JPanel();
+            shadowBox.setLayout(new BorderLayout());
+            shadowBox.setBackground(new Color(200, 200, 200)); // Light gray for shadow effect
+            shadowBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Shadow padding
+
+            // Configure the main formBox
+            JPanel formBox = new JPanel();
+            formBox.setLayout(new BoxLayout(formBox, BoxLayout.Y_AXIS));
+            formBox.setBackground(new Color(255, 255, 255, 150)); // Semi-transparent white
+            formBox.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding around the box
+
+            // Add formBox to shadowBox
+            shadowBox.add(formBox, BorderLayout.CENTER);
+            formBox.setPreferredSize(new Dimension(800, 375));
+            formBox.setMaximumSize(new Dimension(800, 375));
+            formBox.setMinimumSize(new Dimension(800, 375));
+
+            // Add username and password fields
+            usernameField = new JTextField(40);
+            usernameField.setFont(new Font("Arial", Font.PLAIN, 20));
+
+            passwordField = new JPasswordField(40);
+            passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
+
+            Dimension fieldSize = new Dimension(300, 100);
+            usernameField.setPreferredSize(fieldSize);
+            passwordField.setPreferredSize(fieldSize);
+
+            formBox.add(createLabel("<html><b style=\"font-size: 20px;\">User Name:</b></html>"));
+            formBox.add(Box.createVerticalStrut(20));
+            formBox.add(usernameField);
+            formBox.add(Box.createVerticalStrut(20));
+            formBox.add(createLabel("<html><b style=\"font-size: 20px;\">Password:</b></html>"));
+            formBox.add(Box.createVerticalStrut(20));
+            formBox.add(passwordField);
+            formBox.add(Box.createVerticalStrut(20));
+
+            startButton = createStyledButton("Start", "<html><b style='font-size:16px; color:white;'>Start</b></html>");
+            startButton.setPreferredSize(new Dimension(150, 50)); // Width: 150px, Height: 50px
+            startButton.setMaximumSize(new Dimension(150, 50));   // Optional: limit max size
+            startButton.setMinimumSize(new Dimension(150, 50));  // Optional: limit min size
+            startButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Ensure the button aligns in the center
+            startButton.addActionListener(this);
+            formBox.add(startButton);
+
+            containerPanel.add(formBox);
+            setContentPane(background);
+            add(containerPanel);
+        }
+
+        private JLabel createLabel(String text) {
+            JLabel label = new JLabel(text);
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            return label;
+        }
+
+        private JButton createStyledButton(String text, String htmlText) {
+            JButton button = new JButton(htmlText);
+            button.setFocusPainted(false);
+            button.setBackground(new Color(70, 130, 180));
+            button.setForeground(Color.WHITE);
+            button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            return button;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource().equals(startButton)) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Username and Password cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                try {
+                    String result = myService.login(username, password);
+
+                    if (result.startsWith("error#")) {
+                        JOptionPane.showMessageDialog(this, result.substring(6), "Login Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        mySessionCookie = result;
+                        new HomePage(); // Navigate to HomePage
+                        this.dispose();
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error occurred during login.", "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 }
