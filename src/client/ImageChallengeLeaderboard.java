@@ -53,29 +53,27 @@ public class ImageChallengeLeaderboard extends JFrame {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titlePanel.add(titleLabel, BorderLayout.CENTER); // Add the label to the title panel
 
-        // Create the logout button
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        logoutButton.setBackground(new Color(255, 0, 0)); // Red color
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setPreferredSize(new Dimension(100, 40));
-
-        // Action listener for logout button to navigate to the Shape Challenge home page
-        logoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Close the leaderboard and navigate to the home page
-                dispose(); // Close the leaderboard window
-                ImageChallengeHome homePage = new ImageChallengeHome(); // Assuming you have a ShapeChallengeHomePage class
-                homePage.setVisible(true); // Show the home page
+        // Create logout button with an icon
+        JButton btnLogoutNewPage = createStyledButtonWithImage(
+                "Logout",
+                "<html><b style='font-size:16px; color:white;'></b></html>",
+                HomePage.imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
+        );
+        btnLogoutNewPage.addActionListener(e -> {
+            try {
+                this.dispose();
+                ImageChallengeHome imageChallengeHome = new ImageChallengeHome();
+                imageChallengeHome.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
 
-        // Create a panel to hold the logout button and align it to the left
-        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        logoutPanel.setOpaque(false); // Make the panel transparent
-        logoutPanel.add(logoutButton);
+        // Create a panel for the button with transparent background
+        JPanel buttonPanel = new JPanel();
+        // buttonPanel.setOpaque(false); // Make the button panel transparent
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.add(btnLogoutNewPage);
 
         // Create a panel for the table with padding
         JPanel tablePanel = new JPanel();
@@ -136,14 +134,17 @@ public class ImageChallengeLeaderboard extends JFrame {
         gbc.gridy = 1;
         mainPanel.add(tablePanel, gbc);
 
-        // Add the logout panel at the top left
-        gbc.gridy = 0;
-        gbc.gridx = 0;
-        mainPanel.add(logoutPanel, gbc);
+//        // Add the logout panel at the top left
+//        gbc.gridy = 0;
+//        gbc.gridx = 0;
+//        mainPanel.add(logoutPanel, gbc);
 
         // Add the main panel to the frame
         getContentPane().add(mainPanel);
+
+
     }
+
 
     // Method to load leaderboard data from the database
     private void loadLeaderboardData() throws RemoteException {
@@ -174,13 +175,60 @@ public class ImageChallengeLeaderboard extends JFrame {
         });
     }
 
+
+    private JButton createStyledButtonWithImage(String text, String htmlText, String imagePath) {
+        JButton button = new JButton(htmlText) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                // Enable anti-aliasing for smoother gradients
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw a gradient background
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(70, 130, 180),
+                        getWidth(), getHeight(), new Color(100, 149, 237)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 50)); // Semi-transparent black
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 15, 15);
+
+                super.paintComponent(g2d);
+                g2d.dispose();
+            }
+        };
+
+        // Set button properties
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false); // Disable default background
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Load and resize the icon
+        try {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Set desired icon size
+            icon = new ImageIcon(scaledImage);
+            button.setIcon(icon);
+            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Align text to the right of the icon
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return button;
+    }
+
     // Custom JPanel to draw a background image
-    static class BackgroundPanel extends JPanel {
+    private class BackgroundPanel extends JPanel{
         private Image backgroundImage;
 
         public BackgroundPanel() {
             try {
-                backgroundImage = Toolkit.getDefaultToolkit().getImage("C:/Users/miyes/OneDrive/Documents/Mind Game/imageleaderboard.jpg");
+                backgroundImage = Toolkit.getDefaultToolkit().getImage(HomePage.imagePath+"/imageleaderboard.jpg");
             } catch (Exception e) {
                 e.printStackTrace();
             }

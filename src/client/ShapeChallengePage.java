@@ -51,8 +51,10 @@ public class ShapeChallengePage {
 
     int rows = 4;
     int columns = 5;
-    int cardWidth = 120;
-    int cardHeight = 200;
+    int cardWidth = 160;
+    int cardHeight = 300;
+    int cardWidth1 = 350;
+    int cardHeight1 =200;
 
     ArrayList<Card> cardSet;
     ImageIcon cardBackImageIcon;
@@ -65,6 +67,7 @@ public class ShapeChallengePage {
     JPanel logoutPanel = new JPanel();
     JButton logoutButton = new JButton("Logout");
 
+    JLabel scoreLabel = new JLabel();
 
     int errorCount = 0;
     int matchedCount = 0;
@@ -85,23 +88,37 @@ public class ShapeChallengePage {
         setupCards();
         shuffleCards();
 
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximizes the frame
+        frame.setUndecorated(false); // Set to true if you want no window decorations
+        frame.setLocationRelativeTo(null);
+
+        // Configure textPanel with updated layout
+        textPanel.setLayout(new GridLayout(1, 3)); // Three columns for Errors, Time, and Score
+        textPanel.setPreferredSize(new Dimension(800, 40));
+
+// Configure textLabel
         textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
-        textLabel.setText("Errors: " + errorCount);
+        textLabel.setText("<html><b>Errors:</b> " + errorCount + "</html>");
+        textPanel.add(textLabel);
 
+// Configure timerLabel
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         timerLabel.setHorizontalAlignment(JLabel.CENTER);
+        timerLabel.setText("<html><b>Time:</b> " + timeRemaining + "s</html>");
+        textPanel.add(timerLabel);
 
-        textPanel.setLayout(new BorderLayout());
-        textPanel.setPreferredSize(new Dimension(800, 40));
-        textPanel.add(textLabel, BorderLayout.WEST);
-        textPanel.add(timerLabel, BorderLayout.EAST);
+// Configure scoreLabel
+        scoreLabel.setFont(new Font("Arial", Font.PLAIN, 22));
+        scoreLabel.setHorizontalAlignment(JLabel.CENTER);
+        scoreLabel.setText("<html><b>Score:</b> " + finalScore + "</html>");
+        textPanel.add(scoreLabel);
+
+// Add textPanel to the frame
         frame.add(textPanel, BorderLayout.NORTH);
 
         board = new ArrayList<>();
@@ -262,6 +279,7 @@ public class ShapeChallengePage {
             );
 
             if (choice == JOptionPane.OK_OPTION) {
+                gameTimer.stop();
                 frame.dispose(); // Close current game frame
                 new ShapeChallengeHome(); // Open new instance for the home page
             }
@@ -315,8 +333,8 @@ public class ShapeChallengePage {
         cardSet.addAll(cardSet); // Double the deck
 
         // Load the back card image with square dimensions
-        Image cardBackImg = new ImageIcon(getClass().getResource("../img/back.jpg")).getImage();
-        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
+        Image cardBackImg = new ImageIcon(getClass().getResource("../img/ShapeBackImage.jpg")).getImage();
+        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth1, cardHeight1, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
     }
 
     void shuffleCards() {

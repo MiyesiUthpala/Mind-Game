@@ -9,27 +9,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
 
-/**
- * Game that interfaces to an external Server to retrieve a game.
- * A game consists of an image and an integer that denotes the solution of this game.
- *
- * @author Marc Conrad
- *
- */
 public class MathsChallengeServer {
-
-    /**
-     * Basic utility method to read string for URL.
-     */
 
     private static String readUrl(String urlString)  {
         try {
             URL url = new URL(urlString);
             InputStream inputStream = url.openStream();
 
-            // Choose anyone of
-            // https://stackoverflow.com/questions/309424/how-do-i-read-convert-an-inputstream-into-a-string-in-java
-            // to convert InputStream to String.
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int length;
@@ -46,10 +32,6 @@ public class MathsChallengeServer {
 
     }
 
-    /**
-     * Retrieves a random game from the web site.
-     * @return a random game or null if a game cannot be found.
-     */
     public MathsChallengeGame getRandomGame() {
 
         String bananaapi = "https://marcconrad.com/uob/banana/api.php?out=csv&base64=yes";

@@ -55,7 +55,7 @@ public class MathsChallengeLeaderboard extends JFrame {
         JButton btnLogoutNewPage = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                "C:/Users/miyes/OneDrive/Documents/Mind Game/icon/home.png" // Replace this with the actual path to your home/logout icon
+                HomePage.imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
         );
         btnLogoutNewPage.addActionListener(e -> {
             try {
@@ -69,7 +69,7 @@ public class MathsChallengeLeaderboard extends JFrame {
 
         // Create a panel for the button with transparent background
         JPanel buttonPanel = new JPanel();
-//        buttonPanel.setOpaque(false); // Make the button panel transparent
+        // buttonPanel.setOpaque(false); // Make the button panel transparent
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(btnLogoutNewPage);
 
@@ -219,7 +219,7 @@ public class MathsChallengeLeaderboard extends JFrame {
         public BackgroundPanel() {
             try {
                 // Load the background image
-                backgroundImage = new ImageIcon("C:/Users/miyes/OneDrive/Documents/Mind Game/mathsleaderborad.jpg").getImage();
+                backgroundImage = new ImageIcon(HomePage.imagePath+"/mathsleaderborad.jpg").getImage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
