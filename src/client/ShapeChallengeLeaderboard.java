@@ -53,24 +53,7 @@ public class ShapeChallengeLeaderboard extends JFrame {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titlePanel.add(titleLabel, BorderLayout.CENTER); // Add the label to the title panel
 
-        // Create the logout button
-//        JButton logoutButton = new JButton("Logout");
-//        logoutButton.setFont(new Font("Arial", Font.PLAIN, 20));
-//        logoutButton.setBackground(new Color(255, 0, 0)); // Red color
-//        logoutButton.setForeground(Color.WHITE);
-//        logoutButton.setFocusPainted(false);
-//        logoutButton.setPreferredSize(new Dimension(100, 40));
-//
-//        // Action listener for logout button to navigate to the Shape Challenge home page
-//        logoutButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Close the leaderboard and navigate to the home page
-//                dispose(); // Close the leaderboard window
-//                ShapeChallengeHome homePage = new ShapeChallengeHome(); // Assuming you have a ShapeChallengeHomePage class
-//                homePage.setVisible(true); // Show the home page
-//            }
-//        });
+
 
         // Create logout button with an icon
         JButton btnLogoutNewPage = createStyledButtonWithImage(
