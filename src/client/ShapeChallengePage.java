@@ -21,11 +21,7 @@ public class ShapeChallengePage {
     {
         try {
             myService = (ScoreBoardInterface) Naming.lookup("rmi://localhost:1099/ScoreBoardService");
-        } catch (NotBoundException e) {
-            throw new RuntimeException(e);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             throw new RuntimeException(e);
         }
     }
@@ -51,8 +47,8 @@ public class ShapeChallengePage {
 
     int rows = 4;
     int columns = 5;
-    int cardWidth = 160;
-    int cardHeight = 300;
+    int cardWidth = 200;
+    int cardHeight = 50;
     int cardWidth1 = 350;
     int cardHeight1 =200;
 
@@ -67,7 +63,6 @@ public class ShapeChallengePage {
     JPanel logoutPanel = new JPanel();
     JButton logoutButton = new JButton("Logout");
 
-    JLabel scoreLabel = new JLabel();
 
     int errorCount = 0;
     int matchedCount = 0;
@@ -89,36 +84,23 @@ public class ShapeChallengePage {
         shuffleCards();
 
 
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximizes the frame
         frame.setUndecorated(false); // Set to true if you want no window decorations
         frame.setLocationRelativeTo(null);
 
-        // Configure textPanel with updated layout
-        textPanel.setLayout(new GridLayout(1, 3)); // Three columns for Errors, Time, and Score
-        textPanel.setPreferredSize(new Dimension(800, 40));
-
-// Configure textLabel
         textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
-        textLabel.setText("<html><b>Errors:</b> " + errorCount + "</html>");
-        textPanel.add(textLabel);
+        textLabel.setText("Errors: " + errorCount);
 
-// Configure timerLabel
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         timerLabel.setHorizontalAlignment(JLabel.CENTER);
-        timerLabel.setText("<html><b>Time:</b> " + timeRemaining + "s</html>");
-        textPanel.add(timerLabel);
 
-// Configure scoreLabel
-        scoreLabel.setFont(new Font("Arial", Font.PLAIN, 22));
-        scoreLabel.setHorizontalAlignment(JLabel.CENTER);
-        scoreLabel.setText("<html><b>Score:</b> " + finalScore + "</html>");
-        textPanel.add(scoreLabel);
-
-// Add textPanel to the frame
+        textPanel.setLayout(new BorderLayout());
+        textPanel.setPreferredSize(new Dimension(800, 40));
+        textPanel.add(textLabel, BorderLayout.WEST);
+        textPanel.add(timerLabel, BorderLayout.EAST);
         frame.add(textPanel, BorderLayout.NORTH);
 
         board = new ArrayList<>();

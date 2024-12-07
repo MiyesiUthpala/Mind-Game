@@ -1,5 +1,7 @@
 package client;
 
+import client.model.Score;
+import mindgameinterface.ScoreBoardInterface;
 import server.MathsChallengeEngine;
 
 import javax.swing.*;
@@ -7,10 +9,24 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 public class MathsChallengeGameStart extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = -107785653906635L;
+
+    private ScoreBoardInterface myService;
+
+    {
+        try {
+            myService = (ScoreBoardInterface) Naming.lookup("rmi://localhost:1099/ScoreBoardService");
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private JLabel questArea = null;
     private MathsChallengeEngine myGame = null;
@@ -20,7 +36,7 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
     private JLabel scoreLabel;
 
     private Timer timer;
-    private int timeLeft = 120; // 120 seconds countdown
+    private int timeLeft = 180; // 180 seconds countdown
     private int turnCount = 0; // Game limit is 5 turns
     private int score = 0;
 
@@ -39,7 +55,7 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
             return;
         }
 
-        if (turnCount >= 5 || timeLeft <= 0) {
+        if (turnCount >=5 || timeLeft <= 0) {
             // End game due to time running out or completing 5 turns
             timer.stop();
             if (timeLeft <= 0) {
@@ -51,12 +67,23 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
                         "Game Complete",
                         JOptionPane.DEFAULT_OPTION,
                         JOptionPane.INFORMATION_MESSAGE);
+                HomePage.mathsGameComplete = true;
+
+                Score score = new Score();
+                score.setPlayer_name(LoginGUI.mySessionCookie);
+                score.setScore(this.score);
+                score.setGame("Maths Game");
+                try {
+                    myService.addScore(score);
+                    System.out.println(LoginGUI.mySessionCookie);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 // If "OK" is clicked (the default option)
                 if (option == JOptionPane.DEFAULT_OPTION) {
-                    // Redirect to Maths Challenge Home Page
-                    dispose(); // Close the current window
-                    new MathsChallengeHome(); // Create and show the home page
+                    dispose(); //
+                    new MathsChallengeHome();
                 }
             }
             return;
@@ -84,7 +111,7 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
         } else {
             // Reduce score by 50 for incorrect attempts
             score -= 50;
-            if (score < 0) score = 0; // Ensure score doesn't go negative
+            if (score < 0) score = 0;
             updateScoreLabel();
 
             // Optionally display a feedback message for incorrect answers
@@ -123,7 +150,7 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
         gamePanel.add(bananaValueLabel);
 
         // Load and scale the background image
-        ImageIcon originalBackground = new ImageIcon(HomePage.imagePath + "/MathsGame.jpg");
+        ImageIcon originalBackground = new ImageIcon(getClass().getResource("../img/background/MathsGame.jpg"));
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Image scaledBackground = originalBackground.getImage().getScaledInstance(
                 screenSize.width,
@@ -142,6 +169,8 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
         JPanel backButtonPanel = new JPanel();
         backButtonPanel.setOpaque(false);
         backButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+       // https://stackoverflow.com/questions/20601505/java-how-to-add-a-button-to-a-frame
 
         backButton = new JButton("Back");
         backButton.addActionListener(new BackButtonListener());
@@ -173,11 +202,6 @@ public class MathsChallengeGameStart extends JFrame implements ActionListener {
         scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(scoreLabel);
         backgroundLabel.add(headerPanel, BorderLayout.NORTH);
-
-        // Main game panel
-//        JPanel gamePanel = new JPanel();
-//        gamePanel.setOpaque(false);
-//        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
         myGame = new MathsChallengeEngine(player);
         currentGame = myGame.nextGame();

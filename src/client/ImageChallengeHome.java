@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class ImageChallengeHome extends JFrame {
+public class ImageChallengeHome {
 
     private static final long serialVersionUID = 1L;
 
@@ -17,10 +17,11 @@ public class ImageChallengeHome extends JFrame {
         newPage.setExtendedState(JFrame.MAXIMIZED_BOTH);  // Maximizes the window
         newPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        //https://stackoverflow.com/questions/1466240/how-to-set-an-image-as-a-background-for-frame-in-swing-gui-of-java
         // Load the background image for the new page
         BufferedImage newPageBackgroundImage = null;
         try {
-            newPageBackgroundImage = ImageIO.read(new File(HomePage.imagePath+"/ImageHome.jpg"));
+            newPageBackgroundImage = ImageIO.read(getClass().getResource("../img/background/ImageHome.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,12 +39,12 @@ public class ImageChallengeHome extends JFrame {
         };
         mainPanel.setLayout(new BorderLayout());
 
-        // Create logout button with an icon
         JButton btnLogoutNewPage = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                HomePage.imagePath+"/icon/home.png" // Replace with actual path to your home/logout icon
+                "src/img/icons/home.png" // Ensure this path is correct
         );
+
         btnLogoutNewPage.addActionListener(e -> {
             try {
                 newPage.dispose();
@@ -155,6 +156,7 @@ public class ImageChallengeHome extends JFrame {
         button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
+        //https://stackoverflow.com/questions/6714045/how-to-resize-jlabel-imageicon
         // Load and resize the icon
         try {
             ImageIcon icon = new ImageIcon(imagePath);

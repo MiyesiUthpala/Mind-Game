@@ -32,7 +32,7 @@ public class LoginInputWindow extends JFrame implements ActionListener {
         }
 
         // Set the background image
-        ImageIcon originalIcon = new ImageIcon(HomePage.imagePath+"/background.jpg");
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("../img/background/background.jpg"));
         Image scaledImage = originalIcon.getImage().getScaledInstance(
                 Toolkit.getDefaultToolkit().getScreenSize().width,
                 Toolkit.getDefaultToolkit().getScreenSize().height,

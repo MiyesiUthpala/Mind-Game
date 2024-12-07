@@ -6,9 +6,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class ShapeChallengeHome extends JFrame {
+public class ShapeChallengeHome {
 
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
     public ShapeChallengeHome() {
         JFrame newPage = new JFrame("Shape Challenge Home Page");
@@ -21,7 +21,7 @@ public class ShapeChallengeHome extends JFrame {
         // Load the background image for the new page
         BufferedImage newPageBackgroundImage = null;
         try {
-            newPageBackgroundImage = ImageIO.read(new File(HomePage.imagePath+"/shapehome.jpg"));
+            newPageBackgroundImage = ImageIO.read(getClass().getResource("../img/background/shapehome.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class ShapeChallengeHome extends JFrame {
         JButton btnLogoutNewPage = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                HomePage.imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
+                "src/img/icons/home.png"// Replace this with the actual path to your home/logout icon
         );
         btnLogoutNewPage.addActionListener(e -> {
             try {

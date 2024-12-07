@@ -55,13 +55,13 @@ public class MathsChallengeLeaderboard extends JFrame {
         JButton btnLogoutNewPage = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                HomePage.imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
+                "src/img/icons/home.png"
         );
         btnLogoutNewPage.addActionListener(e -> {
             try {
                 this.dispose();
                 MathsChallengeHome mathsChallengeHome = new MathsChallengeHome();
-                mathsChallengeHome.setVisible(true);
+//                mathsChallengeHome.setVisible(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -69,7 +69,7 @@ public class MathsChallengeLeaderboard extends JFrame {
 
         // Create a panel for the button with transparent background
         JPanel buttonPanel = new JPanel();
-        // buttonPanel.setOpaque(false); // Make the button panel transparent
+//        buttonPanel.setOpaque(false); // Make the button panel transparent
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(btnLogoutNewPage);
 
@@ -219,7 +219,7 @@ public class MathsChallengeLeaderboard extends JFrame {
         public BackgroundPanel() {
             try {
                 // Load the background image
-                backgroundImage = new ImageIcon(HomePage.imagePath+"/mathsleaderborad.jpg").getImage();
+                backgroundImage = new ImageIcon(getClass().getResource("../img/background/mathsleaderborad.jpg")).getImage();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,9 +1,14 @@
 package client.model;
 
-public class Score {
+import java.io.Serializable;
+
+public class Score implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String player_name;
+    private String game;
     private  int score;
 
     public int getId() {
@@ -28,5 +33,13 @@ public class Score {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public String getGame() {
+        return game;
+    }
+
+    public void setGame(String game) {
+        this.game = game;
     }
 }

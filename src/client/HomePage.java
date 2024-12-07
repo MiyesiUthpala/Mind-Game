@@ -17,20 +17,20 @@ public class HomePage extends JFrame {
     public static String imagePath = "/Users/miyes/OneDrive/Documents/Mind Game";
 
     public static boolean mathsGameComplete = false;
-    private boolean isMathChallengeCompleted = false; // Initially false
+    private boolean isMathChallengeCompleted = false;
 
     public HomePage() {
 //        JFrame newPage = new JFrame("Home Page");
 
         // Set new page size to desktop size
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // chat gpt
         this.setSize(screenSize.width, screenSize.height);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Load the background image for the new page
         BufferedImage newPageBackgroundImage = null;
         try {
-            newPageBackgroundImage = ImageIO.read(new File(imagePath+"/HomePage.jpg"));
+            newPageBackgroundImage = ImageIO.read(getClass().getResource("../img/background/home.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public class HomePage extends JFrame {
         JButton btnLogoutNewPage = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
+                imagePath+"/icon/home.png"
         );
         btnLogoutNewPage.addActionListener(e -> {
             try {
@@ -79,7 +79,7 @@ public class HomePage extends JFrame {
         JButton btnFeature3 = createStyledButton("Image Challenge", "<html><b style='font-size:20px; color:white;'>Image Challenge</b></html>", "path_to_level3_image.png");
 
         if (mathsGameComplete)
-        if (true)
+//        if (true)
         {
             btnFeature2.setEnabled(true);
             btnFeature3.setEnabled(true);

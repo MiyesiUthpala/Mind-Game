@@ -53,27 +53,35 @@ public class ImageChallengeLeaderboard extends JFrame {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titlePanel.add(titleLabel, BorderLayout.CENTER); // Add the label to the title panel
 
-        // Create logout button with an icon
-        JButton btnLogoutNewPage = createStyledButtonWithImage(
+        // Create the logout button
+//        JButton logoutButton = new JButton("Logout");
+//        logoutButton.setFont(new Font("Arial", Font.PLAIN, 20));
+//        logoutButton.setBackground(new Color(255, 0, 0)); // Red color
+//        logoutButton.setForeground(Color.WHITE);
+//        logoutButton.setFocusPainted(false);
+//        logoutButton.setPreferredSize(new Dimension(100, 40));
+
+        JButton logoutButton = createStyledButtonWithImage(
                 "Logout",
                 "<html><b style='font-size:16px; color:white;'></b></html>",
-                HomePage.imagePath+"/icon/home.png" // Replace this with the actual path to your home/logout icon
-        );
-        btnLogoutNewPage.addActionListener(e -> {
-            try {
-                this.dispose();
-                ImageChallengeHome imageChallengeHome = new ImageChallengeHome();
-                imageChallengeHome.setVisible(true);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                "src/img/icons/home.png");// Replace this with the actual path to your home/logout icon
+
+
+        // Action listener for logout button to navigate to the Shape Challenge home page
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Close the leaderboard and navigate to the home page
+                dispose(); // Close the leaderboard window
+                ImageChallengeHome homePage = new ImageChallengeHome(); // Assuming you have a ShapeChallengeHomePage class
+//                homePage.setVisible(true); // Show the home page
             }
         });
 
-        // Create a panel for the button with transparent background
-        JPanel buttonPanel = new JPanel();
-        // buttonPanel.setOpaque(false); // Make the button panel transparent
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.add(btnLogoutNewPage);
+        // Create a panel to hold the logout button and align it to the left
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        logoutPanel.setOpaque(false); // Make the panel transparent
+        logoutPanel.add(logoutButton);
 
         // Create a panel for the table with padding
         JPanel tablePanel = new JPanel();
@@ -134,17 +142,16 @@ public class ImageChallengeLeaderboard extends JFrame {
         gbc.gridy = 1;
         mainPanel.add(tablePanel, gbc);
 
-//        // Add the logout panel at the top left
-//        gbc.gridy = 0;
-//        gbc.gridx = 0;
+        // Add the logout panel at the top left
+        gbc.gridy = 0;
+        gbc.gridx = 0;
 //        mainPanel.add(logoutPanel, gbc);
+
+        getContentPane().add(logoutPanel, BorderLayout.NORTH);
 
         // Add the main panel to the frame
         getContentPane().add(mainPanel);
-
-
     }
-
 
     // Method to load leaderboard data from the database
     private void loadLeaderboardData() throws RemoteException {
@@ -161,20 +168,6 @@ public class ImageChallengeLeaderboard extends JFrame {
             tableModel.addRow(new Object[]{rank++, score.getPlayer_name(), score.getScore()});
         }
     }
-
-    public static void main(String[] args) {
-        // Launch the leaderboard window
-        SwingUtilities.invokeLater(() -> {
-            ImageChallengeLeaderboard imageChallengeLeaderboard = null;
-            try {
-                imageChallengeLeaderboard = new ImageChallengeLeaderboard();
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-            imageChallengeLeaderboard.setVisible(true);
-        });
-    }
-
 
     private JButton createStyledButtonWithImage(String text, String htmlText, String imagePath) {
         JButton button = new JButton(htmlText) {
@@ -222,13 +215,26 @@ public class ImageChallengeLeaderboard extends JFrame {
         return button;
     }
 
+    public static void main(String[] args) {
+        // Launch the leaderboard window
+        SwingUtilities.invokeLater(() -> {
+            ImageChallengeLeaderboard imageChallengeLeaderboard = null;
+            try {
+                imageChallengeLeaderboard = new ImageChallengeLeaderboard();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            imageChallengeLeaderboard.setVisible(true);
+        });
+    }
+
     // Custom JPanel to draw a background image
-    private class BackgroundPanel extends JPanel{
+    static class BackgroundPanel extends JPanel {
         private Image backgroundImage;
 
         public BackgroundPanel() {
             try {
-                backgroundImage = Toolkit.getDefaultToolkit().getImage(HomePage.imagePath+"/imageleaderboard.jpg");
+                backgroundImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("../img/background/imageleaderboard.jpg"));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -48,7 +48,7 @@ public class MathsChallengeServer {
             img = ImageIO.read(quest);
             return new MathsChallengeGame(img, solution);
         } catch (IOException e1) {
-            // TODO Add proper exception handling.
+
             e1.printStackTrace();
             return null;
         }

@@ -47,7 +47,7 @@ public class ImageChallengePage {
     int errorCount = 0;
     int matchedCount = 0;
     int totalPairs = cardList.length;
-    int errorLimit = 5;
+    int errorLimit = 3;
 
     ArrayList<JButton> board;
     Timer hideCardTimer;

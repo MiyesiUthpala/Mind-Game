@@ -2,50 +2,57 @@ package server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import mindgameinterface.LoginInterface;
+import server.util.DBConnection;
 
 public class LoginService extends UnicastRemoteObject implements LoginInterface {
 
-
+    // Serial version UID for class version control during serialization
     private static final long serialVersionUID = -2041305498663694835L;
 
 
+    // Session cookie initialized with a random value for each session
     private String sessionCookie = "abc"+Math.random();
-    /**
-     * The services returns a secret message after login. It also provides a greeting that does not need login.
-     * @throws RemoteException
-     */
+
     public LoginService() throws RemoteException {
         // TODO Auto-generated constructor stub
     }
 
     @Override
-    public String sayHello() throws RemoteException {
+    public String login(String username, String password) throws RemoteException {
+        String query = "SELECT password FROM users WHERE username = ?";
 
-        return "Hello! Have a good day!";
-    }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-    @Override
-    public String getSecretMessage(String cookie) throws RemoteException {
-        if( cookie.equals(sessionCookie)) {
-            return "This is a secret message: Alice is in a relationship with Bob. It is complicated.";
-        } else {
-            return "You must login to read this message";
-        }
-    }
+            // Set the username parameter
+            pstmt.setString(1, username);
 
-    @Override
-    public String login(String password) throws RemoteException {
-        /* Note and Warning! This setup demonstrates the interaction between cookies and
-         * login. Actually security is not in the scope of this demo.
-         * Usually you wouldn't hardcode a password in production code but the password
-         * were to be checked up against an (encrypted) database.
-         */
-        if(password != null && password.equals("hello")) {
-            sessionCookie = "xyz"+Math.random();
-            return sessionCookie;
-        } else {
-            return "wrong";
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Retrieve the stored password
+                    String storedPassword = rs.getString("password");
+
+                    // Compare the provided password with the stored one
+                    if (storedPassword.equals(RegisterService.hashPassword(password))) { // Ideally, use hashing here
+                        // Generate a session cookie (could be a UUID for better uniqueness)
+                        sessionCookie =  username;
+                        return sessionCookie;
+                    } else {
+                        return "error#Invalid password.";
+                    }
+                } else {
+                    return "error#Username not found.";
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "error#An error occurred while processing the login.";
         }
     }
 
