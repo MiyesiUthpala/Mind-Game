@@ -6,22 +6,21 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class MathsChallengeHome extends JFrame {
+public class MathsChallengeHome{
 
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
-    public MathsChallengeHome (){
+    public MathsChallengeHome() {
         JFrame newPage = new JFrame("Maths Challenge Home Page");
 
-        // Set new page size to desktop size
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        newPage.setSize(screenSize.width, screenSize.height);
+        // Set new page to fullscreen
+        newPage.setExtendedState(JFrame.MAXIMIZED_BOTH);  // Maximizes the window
         newPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Load the background image for the new page
         BufferedImage newPageBackgroundImage = null;
         try {
-            newPageBackgroundImage = ImageIO.read(new File("C:/Users/miyes/OneDrive/Documents/Mind Game/shapehome.jpg"));
+            newPageBackgroundImage = ImageIO.read(getClass().getResource("../img/background/MathsHome.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,40 +38,44 @@ public class MathsChallengeHome extends JFrame {
         };
         mainPanel.setLayout(new BorderLayout());
 
-        // Create a panel to hold buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.setOpaque(false); // Make button panel transparent
-
-        // Create buttons with HTML text and images
-        JButton btnFeature4 = createStyledButtonWithImage("Maths Challenge Game", "<html><b style='font-size:12px; color:white;'>Maths Challenge Game</b></html>", "path_to_level1_image.png");
-        JButton btnFeature5 = createStyledButtonWithImage("How To Play", "<html><b style='font-size:12px; color:white;'>How To Play</b></html>", "path_to_level2_image.png");
-        JButton btnFeature6 = createStyledButtonWithImage("Leaderboard", "<html><b style='font-size:12px; color:white;'>Leaderboard</b></html>", "path_to_level3_image.png");
-        JButton btnLogoutNewPage = createStyledButton("Logout", "<html><b style='font-size:12px; color:white;'>Logout</b></html>");
-
-        // Set button sizes and actions
-        Dimension buttonSize = new Dimension(250, 70);
-        btnFeature4.setPreferredSize(buttonSize);
-        btnFeature5.setPreferredSize(buttonSize);
-        btnFeature6.setPreferredSize(buttonSize);
-        btnLogoutNewPage.setPreferredSize(buttonSize);
-
+        // Create logout button with an icon
+        JButton btnLogoutNewPage = createStyledButtonWithImage(
+                "Logout",
+                "<html><b style='font-size:16px; color:white;'></b></html>",
+                "src/img/icons/home.png"// Replace with actual path to your home/logout icon
+        );
         btnLogoutNewPage.addActionListener(e -> {
             try {
-                newPage.dispose(); // Close current frame
-                HomePage homePage = new HomePage(); // Redirect to home page
+                newPage.dispose();
+                HomePage homePage = new HomePage();
+                homePage.setVisible(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setOpaque(false);
+        topPanel.add(btnLogoutNewPage);
+
+        // Create a panel to hold the main buttons
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false);
+
+        // Create buttons
+        JButton btnFeature4 = createStyledButton("Maths Challenge Game", "<html><b style='font-size:20px;'>Maths Challenge Game</b></html>", "path_to_level1_image.png");
+        JButton btnFeature5 = createStyledButton("How To Play", "<html><b style='font-size:20px;'>How To Play</b></html>", "path_to_level2_image.png");
+        JButton btnFeature6 = createStyledButton("Leaderboard", "<html><b style='font-size:20px;'>Leaderboard</b></html>", "path_to_level3_image.png");
+
+
+        // Add action listeners
         btnFeature4.addActionListener(e -> {
             try {
                 newPage.dispose();
                 MathsChallengeGameStart mathsChallengeGameStart = new MathsChallengeGameStart();
-                mathsChallengeGameStart.setVisible(true); // Ensure the game window is visible
+                mathsChallengeGameStart.setVisible(true);
             } catch (Exception ex) {
-                System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();
             }
         });
@@ -81,40 +84,84 @@ public class MathsChallengeHome extends JFrame {
                 newPage.dispose();
                 MathsHowToPlay mathsHowToPlay = new MathsHowToPlay();
             } catch (Exception ex) {
-                System.out.println("A problem occurred: " + ex.toString());
                 ex.printStackTrace();
             }
         });
 
-        // Add buttons to panel with spacing
-        buttonPanel.add(btnFeature4);
-        buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(btnFeature5);
-        buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(btnFeature6);
-        buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(btnLogoutNewPage);
+        btnFeature6.addActionListener(e -> {
+            try {
+                newPage.dispose();
+                MathsChallengeLeaderboard mathsChallengeLeaderboard = new MathsChallengeLeaderboard();
+                mathsChallengeLeaderboard.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
-        // Align buttons to the left of the main panel
-        mainPanel.add(buttonPanel, BorderLayout.WEST);
+        // Set button size larger
+        Dimension buttonSize = new Dimension(350, 120);  // Increased button size
+        btnFeature4.setPreferredSize(buttonSize);
+        btnFeature5.setPreferredSize(buttonSize);
+        btnFeature6.setPreferredSize(buttonSize);
 
-        // Add main panel to the frame and make it visible
+        // Add buttons to the panel
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        buttonPanel.add(btnFeature4, gbc);
+        gbc.gridy++;
+        buttonPanel.add(btnFeature5, gbc);
+        gbc.gridy++;
+        buttonPanel.add(btnFeature6, gbc);
+
+        // Add panels to main layout
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
         newPage.add(mainPanel);
         newPage.setVisible(true);
     }
 
     private JButton createStyledButtonWithImage(String text, String htmlText, String imagePath) {
-        JButton button = new JButton(htmlText);
-        button.setFocusPainted(false);
-        button.setBackground(new Color(70, 130, 180));
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        JButton button = new JButton(htmlText) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                // Enable anti-aliasing for smoother gradients
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Load and set the image
+                // Draw a gradient background
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(70, 130, 180),
+                        getWidth(), getHeight(), new Color(107, 167, 211)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 50)); // Semi-transparent black
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 15, 15);
+
+                super.paintComponent(g2d);
+                g2d.dispose();
+            }
+        };
+
+        // Set button properties
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false); // Disable default background
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Load and resize the icon
         try {
             ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Increased icon size
+            icon = new ImageIcon(scaledImage);
             button.setIcon(icon);
-            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Adjust text and icon positioning
+            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Align text to the right of the icon
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,12 +169,50 @@ public class MathsChallengeHome extends JFrame {
         return button;
     }
 
-    private JButton createStyledButton(String text, String htmlText) {
-        JButton button = new JButton(htmlText);
+    private JButton createStyledButton(String text, String htmlText, String imagePath) {
+        JButton button = new JButton(htmlText) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                // Enable anti-aliasing for smoother gradients
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw a gradient background
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(54, 98, 138),
+                        getWidth(), getHeight(), new Color(189, 197, 197)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 50)); // Semi-transparent black
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 15, 15);
+
+                super.paintComponent(g2d);
+                g2d.dispose();
+            }
+        };
+
+        // Set button properties
         button.setFocusPainted(false);
-        button.setBackground(new Color(70, 130, 180));
+        button.setContentAreaFilled(false); // Disable default background
         button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Adjust padding
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Load and resize the icon
+        try {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Increased icon size
+            icon = new ImageIcon(scaledImage);
+            button.setIcon(icon);
+            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Align text to the right of the icon
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return button;
     }
+
 }

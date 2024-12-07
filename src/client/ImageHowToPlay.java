@@ -13,29 +13,33 @@ public class ImageHowToPlay {
     JButton backButton = new JButton("Back to Game");
 
     ImageHowToPlay() {
-        howToPlayFrame.setSize(600, 400);
+        // Get screen dimensions and set frame size to full screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        howToPlayFrame.setSize(screenSize.width, screenSize.height); // Full screen size
+        howToPlayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize the frame
         howToPlayFrame.setLayout(new BorderLayout());
         howToPlayFrame.setLocationRelativeTo(null);
         howToPlayFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         // Custom panel with background image
-        ImageHowToPlay.BackgroundPanel backgroundPanel = new ImageHowToPlay.BackgroundPanel("C:/Users/miyes/OneDrive/Documents/Mind Game/background.jpg");
+        ImageHowToPlay.BackgroundPanel backgroundPanel = new ImageHowToPlay.BackgroundPanel(HomePage.imagePath+"/background.jpg");
         backgroundPanel.setLayout(new GridBagLayout()); // Center components in the middle
         howToPlayFrame.add(backgroundPanel);
 
         // Instructions text with a box
-        String instructions = "<html><body>" +
-                "<h2>How to Play:</h2>" +
-                "<ol>" +
-                "<li>Understand the Layout</li>" +
-                "<li>Identify the Operations</li>" +
-                "<li>Solve the First Equation</li>" +
-                "<li>Move to the Next Row or Column</li>" +
-                "<li>Check for Multiplication and Other Operations</li>" +
-                "<li>Verify the Answers</li>" +
-                "<li>Complete the Challenge</li>" +
+        String instructions = "<html><body style='padding: 10px; font-family: Arial, sans-serif;'>" +
+                "<h2 style='text-align: center; color: #4CAF50; text-shadow: 1px 1px 2px #888; font-size: 22px;'>How to play Shape Challenge Game</h2>" +
+                "<ol style='line-height: 2.5; margin-top: 20px; font-size: 20px;'>" + // Increased line height and margin top
+                "<li>Start the Game</li><br>" +
+                "<li>Preview the Shapes (First 5 Seconds)</li><br>" +
+                "<li>Start Matching</li><br>" +
+                "<li>Check for a Match</li><br>" +
+                "<li>Continue Matching</li><br>" +
+                "<li>Win the Game</li><br>" +
                 "</ol>" +
+                "<p style='margin-top: 20px; font-size: 20px; text-align: center; color: #555;'>" +
+                "Good luck and have fun!</p>" +
                 "</body></html>";
+
 
         JLabel instructionsLabel = new JLabel(instructions);
         instructionsLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Adjusted font size
@@ -75,7 +79,7 @@ public class ImageHowToPlay {
         backButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding inside the button
         backButton.addActionListener(e -> {
             howToPlayFrame.dispose(); // Close HowToPlayPage window
-            new ImageChallengePage(); // Redirect to image Challenge home page
+            new ImageChallengeHome(); // Redirect to image Challenge home page
         });
 
         // Logout button
@@ -128,7 +132,8 @@ public class ImageHowToPlay {
 
             if (choice == JOptionPane.OK_OPTION) {
                 howToPlayFrame.dispose(); // Close HowToPlayPage window
-                new ImageChallengeHome(); // Create a new instance of the home page
+                LoginInputWindow loginInputWindow = new LoginInputWindow();
+                loginInputWindow.setVisible(true);
             }
         }
     }

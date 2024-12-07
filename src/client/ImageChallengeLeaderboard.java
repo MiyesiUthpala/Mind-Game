@@ -54,12 +54,18 @@ public class ImageChallengeLeaderboard extends JFrame {
         titlePanel.add(titleLabel, BorderLayout.CENTER); // Add the label to the title panel
 
         // Create the logout button
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 20));
-        logoutButton.setBackground(new Color(255, 0, 0)); // Red color
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setPreferredSize(new Dimension(100, 40));
+//        JButton logoutButton = new JButton("Logout");
+//        logoutButton.setFont(new Font("Arial", Font.PLAIN, 20));
+//        logoutButton.setBackground(new Color(255, 0, 0)); // Red color
+//        logoutButton.setForeground(Color.WHITE);
+//        logoutButton.setFocusPainted(false);
+//        logoutButton.setPreferredSize(new Dimension(100, 40));
+
+        JButton logoutButton = createStyledButtonWithImage(
+                "Logout",
+                "<html><b style='font-size:16px; color:white;'></b></html>",
+                "src/img/icons/home.png");// Replace this with the actual path to your home/logout icon
+
 
         // Action listener for logout button to navigate to the Shape Challenge home page
         logoutButton.addActionListener(new ActionListener() {
@@ -68,7 +74,7 @@ public class ImageChallengeLeaderboard extends JFrame {
                 // Close the leaderboard and navigate to the home page
                 dispose(); // Close the leaderboard window
                 ImageChallengeHome homePage = new ImageChallengeHome(); // Assuming you have a ShapeChallengeHomePage class
-                homePage.setVisible(true); // Show the home page
+//                homePage.setVisible(true); // Show the home page
             }
         });
 
@@ -139,7 +145,9 @@ public class ImageChallengeLeaderboard extends JFrame {
         // Add the logout panel at the top left
         gbc.gridy = 0;
         gbc.gridx = 0;
-        mainPanel.add(logoutPanel, gbc);
+//        mainPanel.add(logoutPanel, gbc);
+
+        getContentPane().add(logoutPanel, BorderLayout.NORTH);
 
         // Add the main panel to the frame
         getContentPane().add(mainPanel);
@@ -161,6 +169,52 @@ public class ImageChallengeLeaderboard extends JFrame {
         }
     }
 
+    private JButton createStyledButtonWithImage(String text, String htmlText, String imagePath) {
+        JButton button = new JButton(htmlText) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                // Enable anti-aliasing for smoother gradients
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw a gradient background
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(70, 130, 180),
+                        getWidth(), getHeight(), new Color(100, 149, 237)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+                // Draw shadow
+                g2d.setColor(new Color(0, 0, 0, 50)); // Semi-transparent black
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 15, 15);
+
+                super.paintComponent(g2d);
+                g2d.dispose();
+            }
+        };
+
+        // Set button properties
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false); // Disable default background
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Load and resize the icon
+        try {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Set desired icon size
+            icon = new ImageIcon(scaledImage);
+            button.setIcon(icon);
+            button.setHorizontalTextPosition(SwingConstants.RIGHT); // Align text to the right of the icon
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return button;
+    }
+
     public static void main(String[] args) {
         // Launch the leaderboard window
         SwingUtilities.invokeLater(() -> {
@@ -180,7 +234,7 @@ public class ImageChallengeLeaderboard extends JFrame {
 
         public BackgroundPanel() {
             try {
-                backgroundImage = Toolkit.getDefaultToolkit().getImage("C:/Users/miyes/OneDrive/Documents/Mind Game/imageleaderboard.jpg");
+                backgroundImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("../img/background/imageleaderboard.jpg"));
             } catch (Exception e) {
                 e.printStackTrace();
             }

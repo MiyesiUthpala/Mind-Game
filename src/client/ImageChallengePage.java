@@ -28,9 +28,10 @@ public class ImageChallengePage {
 
     int rows = 4;
     int columns = 5;
-    int cardWidth = 120;
-    int cardHeight = 200;
-
+    int cardWidth = 200;
+    int cardHeight = 50;
+    int cardWidth1 = 350;
+    int cardHeight1 =200;
     ArrayList<Card> cardSet;
     ImageIcon cardBackImageIcon;
 
@@ -46,7 +47,7 @@ public class ImageChallengePage {
     int errorCount = 0;
     int matchedCount = 0;
     int totalPairs = cardList.length;
-    int errorLimit = 5;
+    int errorLimit = 3;
 
     ArrayList<JButton> board;
     Timer hideCardTimer;
@@ -62,11 +63,11 @@ public class ImageChallengePage {
         setupCards();
         shuffleCards();
 
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximizes the frame
+        frame.setUndecorated(false); // Set to true if you want no window decorations
+        frame.setLocationRelativeTo(null);
 
         textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -284,7 +285,7 @@ public class ImageChallengePage {
 
         // Load the back card image with square dimensions
         Image cardBackImg = new ImageIcon(getClass().getResource("../img/backimage.jpg")).getImage();
-        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
+        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth1, cardHeight1, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
     }
 
     void shuffleCards() {

@@ -1,190 +1,277 @@
 package client;
 
+import client.model.Score;
+import mindgameinterface.ScoreBoardInterface;
 import server.MathsChallengeEngine;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 public class MathsChallengeGameStart extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = -107785653906635L;
 
+    private ScoreBoardInterface myService;
+
+    {
+        try {
+            myService = (ScoreBoardInterface) Naming.lookup("rmi://localhost:1099/ScoreBoardService");
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private JLabel questArea = null;
     private MathsChallengeEngine myGame = null;
     private BufferedImage currentGame = null;
-    private JTextArea infoArea = null;
+
+    private JLabel timeLabel;
+    private JLabel scoreLabel;
+
     private Timer timer;
-    private int timeLeft = 120; // 120 seconds countdown
-    private int turnCount = 0; // Game limit is 10 turns
+    private int timeLeft = 180; // 180 seconds countdown
+    private int turnCount = 0; // Game limit is 5 turns
     private int score = 0;
 
-    private JButton logoutButton;
+    private JButton backButton;
 
     // Track whether the game is ready for action or not
     private boolean gameReady = true;
 
-    /**
-     * Method that is called when a button has been pressed.
-     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == logoutButton) {
-            // Action for logout button
-            System.out.println("Logging out...");
-            // Close the current game and return to home page
-            gameReady = false;  // Indicate that the game is no longer active
-            new LogoutButtonListener().actionPerformed(e);  // Trigger the logout flow
+        if (e.getSource() == backButton) {
+            System.out.println("Returning to home...");
+            gameReady = false;
+            timer.stop();
+            new BackButtonListener().actionPerformed(e);
             return;
         }
 
-        if (turnCount >= 10 || timeLeft <= 0) {
-            infoArea.setText("Game Over! Final Score: " + score);
+        if (turnCount >=5 || timeLeft <= 0) {
+            // End game due to time running out or completing 5 turns
+            timer.stop();
+            if (timeLeft <= 0) {
+                JOptionPane.showMessageDialog(this, "Time is Over!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Show success message with the score
+                int option = JOptionPane.showConfirmDialog(this,
+                        "Successfully Done. Congratulations!\nYour Final Score: " + score,
+                        "Game Complete",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE);
+                HomePage.mathsGameComplete = true;
+
+                Score score = new Score();
+                score.setPlayer_name(LoginGUI.mySessionCookie);
+                score.setScore(this.score);
+                score.setGame("Maths Game");
+                try {
+                    myService.addScore(score);
+                    System.out.println(LoginGUI.mySessionCookie);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                // If "OK" is clicked (the default option)
+                if (option == JOptionPane.DEFAULT_OPTION) {
+                    dispose(); //
+                    new MathsChallengeHome();
+                }
+            }
             return;
         }
 
-        int solution = Integer.parseInt(e.getActionCommand());
+        int solution;
+        try {
+            solution = Integer.parseInt(e.getActionCommand());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Please select a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         boolean correct = myGame.checkSolution(solution);
 
         if (correct) {
-            if (turnCount == 0) { // First time getting it correct in the turn
-                score += 100; // 100 points for correct answer on first try
+            turnCount++;
+            score += turnCount * 50; // Incremental score for correct attempts
+            updateScoreLabel();
+            if (turnCount <= 5) {
+                currentGame = myGame.nextGame();
+                ImageIcon ii = new ImageIcon(currentGame);
+                questArea.setIcon(ii);
             }
-            currentGame = myGame.nextGame();
-            ImageIcon ii = new ImageIcon(currentGame);
-            questArea.setIcon(ii);
-            infoArea.setText("Good!  Score: " + score);
         } else {
-            infoArea.setText("Oops. Try again!  Score: " + score);
-        }
+            // Reduce score by 50 for incorrect attempts
+            score -= 50;
+            if (score < 0) score = 0;
+            updateScoreLabel();
 
-        // Increment turn count and update game state
-        turnCount++;
-        if (turnCount == 10 || timeLeft <= 0) {
-            infoArea.setText("Game Over! Final Score: " + score);
+            // Optionally display a feedback message for incorrect answers
+            JOptionPane.showMessageDialog(this, "Incorrect answer! 50 points deducted.", "Try Again", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    /**
-     * Initializes the game.
-     * @param player
-     */
+    private void updateTimeLabel() {
+        timeLabel.setText("Time Left: " + timeLeft + " sec");
+    }
+
+    private void updateScoreLabel() {
+        scoreLabel.setText("Score: " + score);
+    }
+
     private void initGame(String player) {
-        setSize(690, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("What is the missing value?");
-        JPanel panel = new JPanel();
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Fullscreen
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Main game panel
+        JPanel gamePanel = new JPanel();
+        gamePanel.setOpaque(false);
+        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
+
+        // Add the "What is the banana value?" label
+        JLabel bananaValueLabel = new JLabel("What is the banana value?");
+        bananaValueLabel.setFont(new Font("Courier New", Font.ITALIC | Font.BOLD, 28));
+        bananaValueLabel.setForeground(Color.WHITE);
+        bananaValueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bananaValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Set a transparent background with alpha
+        bananaValueLabel.setOpaque(true);
+        bananaValueLabel.setBackground(new Color(78, 162, 160, 255)); // Black with 50% transparency (alpha = 128)
+        gamePanel.add(bananaValueLabel);
+
+        // Load and scale the background image
+        ImageIcon originalBackground = new ImageIcon(getClass().getResource("../img/background/MathsGame.jpg"));
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Image scaledBackground = originalBackground.getImage().getScaledInstance(
+                screenSize.width,
+                screenSize.height,
+                Image.SCALE_SMOOTH
+        );
+        JLabel backgroundLabel = new JLabel(new ImageIcon(scaledBackground));
+        backgroundLabel.setLayout(new BorderLayout());
+        add(backgroundLabel, BorderLayout.CENTER);
+
+        // Header panel for time, score, and back button
+        JPanel headerPanel = new JPanel(new GridLayout(1, 3));
+        headerPanel.setOpaque(false);
+
+        // Back button panel
+        JPanel backButtonPanel = new JPanel();
+        backButtonPanel.setOpaque(false);
+        backButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+       // https://stackoverflow.com/questions/20601505/java-how-to-add-a-button-to-a-frame
+
+        backButton = new JButton("Back");
+        backButton.addActionListener(new BackButtonListener());
+        backButton.setFont(new Font("Arial", Font.BOLD, 18));
+        backButton.setPreferredSize(new Dimension(100, 40));
+        backButton.setBackground(new Color(76, 65, 126));
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        backButtonPanel.add(backButton);
+        headerPanel.add(backButtonPanel);
+
+        // Time label
+        timeLabel = new JLabel("Time Left: " + timeLeft + " sec");
+        timeLabel.setOpaque(true);
+        timeLabel.setBackground(new Color(108, 161, 103, 255));  // Semi-transparent background
+        timeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        timeLabel.setForeground(Color.WHITE);
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(timeLabel);
+
+
+        // Score label
+        scoreLabel = new JLabel("Score: " + score);
+        scoreLabel.setOpaque(true);
+        scoreLabel.setBackground(new Color(23, 110, 45, 255));  // Semi-transparent background
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(scoreLabel);
+        backgroundLabel.add(headerPanel, BorderLayout.NORTH);
 
         myGame = new MathsChallengeEngine(player);
         currentGame = myGame.nextGame();
 
-        infoArea = new JTextArea(1, 40);
-        infoArea.setEditable(false);
-        infoArea.setText("What is the value of the banana?   Score: 0");
+        Image scaledImage = currentGame.getScaledInstance(800, 500, Image.SCALE_SMOOTH);
+        ImageIcon ii = new ImageIcon(scaledImage);
 
-        JScrollPane infoPane = new JScrollPane(infoArea);
-        panel.add(infoPane);
-
-        ImageIcon ii = new ImageIcon(currentGame);
         questArea = new JLabel(ii);
-        questArea.setSize(330, 600);
+        questArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        questArea.setPreferredSize(new Dimension(800, 500));  // Set the fixed size for questArea
+        questArea.setMaximumSize(new Dimension(800, 500));  // Ensures the questArea cannot exceed this size
+        questArea.setMinimumSize(new Dimension(800, 500));  // Ensures the questArea won't shrink below this size
+        gamePanel.add(questArea);
 
-        JScrollPane questPane = new JScrollPane(questArea);
-        panel.add(questPane);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new FlowLayout());
 
-        // Add number buttons
         for (int i = 0; i < 10; i++) {
             JButton btn = new JButton(String.valueOf(i));
-            panel.add(btn);
+            buttonPanel.add(btn);
             btn.addActionListener(this);
         }
+        gamePanel.add(buttonPanel);
 
-        // Set up timer
-        timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    infoArea.setText("Time Left: " + timeLeft + " sec  Score: " + score);
-                } else {
-                    infoArea.setText("Time's up! Final Score: " + score);
-                    timer.stop();
+        backgroundLabel.add(gamePanel, BorderLayout.CENTER);
+
+        // Timer setup
+        timer = new Timer(1000, e -> {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimeLabel();
+            } else {
+                timer.stop();
+                // Show the "Time is Over!" message
+                int option = JOptionPane.showConfirmDialog(
+                        this,
+                        "Time is Over!",
+                        "Game Over",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Redirect to Maths Challenge Home Page after "OK" is clicked
+                if (option == JOptionPane.DEFAULT_OPTION) {
+                    dispose();
+                    SwingUtilities.invokeLater(() -> new MathsChallengeHome());
                 }
             }
         });
         timer.start();
-
-        // Add logout button and its action listener
-        logoutButton = new JButton("Logout");
-        logoutButton.addActionListener(new LogoutButtonListener()); // Assign LogoutButtonListener to logout button
-        panel.add(logoutButton);
-
-        getContentPane().add(panel);
-        panel.repaint();
     }
 
-    /**
-     * Default player is null.
-     */
     public MathsChallengeGameStart() {
         super();
         initGame(null);
     }
 
-    /**
-     * Use this to start GUI, e.g., after login.
-     *
-     * @param player
-     */
-    public MathsChallengeGameStart(String player) {
-        super();
-        initGame(player);
-    }
-
-    /**
-     * Show the home page after logout.
-     */
-    private void showHomePage() {
-        // Here you can either display an HTML page or a new JFrame
-        JFrame homePage = new JFrame("Home Page");
-        homePage.setSize(500, 400);
-        homePage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel welcomeLabel = new JLabel("Welcome to the Maths Challenge Game!");
-        welcomeLabel.setBounds(100, 150, 300, 50);
-        homePage.add(welcomeLabel);
-        homePage.setVisible(true);
-    }
-
-    /**
-     * Main entry point into the equation game. Can be used without login for testing.
-     *
-     * @param args not used.
-     */
     public static void main(String[] args) {
         MathsChallengeGameStart myGUI = new MathsChallengeGameStart();
         myGUI.setVisible(true);
     }
 
-    // LogoutButtonListener to handle logout functionality
-    class LogoutButtonListener implements ActionListener {
+    class BackButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (!gameReady) return;
 
-            // Display logout confirmation message
-            int choice = JOptionPane.showConfirmDialog(
-                    MathsChallengeGameStart.this,
-                    "You are logged out. Do you want to go back to the home page?",
-                    "Logged Out",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            if (choice == JOptionPane.OK_OPTION) {
-                dispose(); // Close current game frame
-                new MathsChallengeHome(); // Open the home page
-            }
+            dispose();
+            new MathsChallengeHome();
         }
     }
 }

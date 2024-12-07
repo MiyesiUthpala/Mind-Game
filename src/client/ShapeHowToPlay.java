@@ -1,45 +1,53 @@
 package client;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ShapeHowToPlay {
+
     JFrame howToPlayFrame = new JFrame("How to Play");
     JButton logoutButton = new JButton("Logout");
     JButton backButton = new JButton("Back to Game");
 
     ShapeHowToPlay() {
-        howToPlayFrame.setSize(600, 400);
+        // Get screen dimensions and set frame size to full screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        howToPlayFrame.setSize(screenSize.width, screenSize.height); // Full screen size
+        howToPlayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize the frame
         howToPlayFrame.setLayout(new BorderLayout());
         howToPlayFrame.setLocationRelativeTo(null);
         howToPlayFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Custom panel with background image
-        BackgroundPanel backgroundPanel = new BackgroundPanel("C:/Users/miyes/OneDrive/Documents/Mind Game/background.jpg");
+        BackgroundPanel backgroundPanel = new BackgroundPanel(HomePage.imagePath+"/background.jpg");
         backgroundPanel.setLayout(new GridBagLayout()); // Center components in the middle
         howToPlayFrame.add(backgroundPanel);
 
         // Instructions text with a box
-        String instructions = "<html><body>" +
-                "<h2>How to Play:</h2>" +
-                "<ol>" +
-                "<li>Understand the Layout</li>" +
-                "<li>Identify the Operations</li>" +
-                "<li>Solve the First Equation</li>" +
-                "<li>Move to the Next Row or Column</li>" +
-                "<li>Check for Multiplication and Other Operations</li>" +
-                "<li>Verify the Answers</li>" +
-                "<li>Complete the Challenge</li>" +
+        String instructions = "<html><body style='padding: 10px; font-family: Arial, sans-serif;'>" +
+                "<h2 style='text-align: center; color: #4CAF50; text-shadow: 1px 1px 2px #888; font-size: 22px;'>How to play Shape Challenge Game</h2>" +
+                "<ol style='line-height: 2.5; margin-top: 20px; font-size: 20px;'>" + // Increased line height and margin top
+                "<li>Start the Game</li><br>" +
+                "<li>Preview the Shapes (First 5 Seconds)</li><br>" +
+                "<li>Start Matching</li><br>" +
+                "<li>Check for a Match</li><br>" +
+                "<li>Continue Matching</li><br>" +
+                "<li>Win the Game</li><br>" +
                 "</ol>" +
+                "<p style='margin-top: 20px; font-size: 20px; text-align: center; color: #555;'>" +
+                "Good luck and have fun!</p>" +
                 "</body></html>";
+
 
         JLabel instructionsLabel = new JLabel(instructions);
         instructionsLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Adjusted font size
         instructionsLabel.setVerticalAlignment(SwingConstants.TOP);
         instructionsLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center text horizontally
+
 
         // Box panel for instructions (reduced transparency)
         JPanel boxPanel = new JPanel();
@@ -64,34 +72,74 @@ public class ShapeHowToPlay {
         // Button panel with Logout and Back buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false); // Make button panel transparent
-        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Add spacing between buttons
 
-        // Back button to return to the Shape Challenge home page
-        backButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        backButton.setBackground(new Color(76, 65, 126)); // Set a background color for the button
-        backButton.setForeground(Color.WHITE); // Set text color to white
+        // Custom button settings
+        Font buttonFont = new Font("Arial", Font.BOLD, 20); // Larger font for buttons
+        Border buttonBorder = BorderFactory.createEmptyBorder(25, 50, 25, 50); // Increased padding for larger buttons
+        Color hoverColor = new Color(150, 200, 255); // Light blue hover color
+        Color borderColor = new Color(255, 255, 255); // White border color
+
+        // Back button
+        backButton.setFont(buttonFont);
+        backButton.setBackground(new Color(76, 65, 126)); // Background color
+        backButton.setForeground(Color.WHITE); // Text color
         backButton.setFocusPainted(false); // Remove focus border
-        backButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding inside the button
+        backButton.setBorder(buttonBorder); // Increased padding for larger size
+        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Hand cursor on hover
+        backButton.setContentAreaFilled(false); // Remove default button look
+        backButton.setOpaque(true); // Enable custom background
+        backButton.setBorder(BorderFactory.createLineBorder(borderColor, 4, true)); // Rounded border with white outline
         backButton.addActionListener(e -> {
             howToPlayFrame.dispose(); // Close HowToPlayPage window
-            new ShapeChallengePage(); // Redirect to Shape Challenge home page
+            new ShapeChallengeHome(); // Redirect to Maths Challenge home page
+        });
+
+        // Add hover effect for Back button
+        backButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                backButton.setBackground(hoverColor); // Change to hover color
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                backButton.setBackground(new Color(76, 65, 126)); // Revert to original color
+            }
         });
 
         // Logout button
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        logoutButton.setBackground(new Color(23, 110, 45)); // Set a background color for logout
-        logoutButton.setForeground(Color.WHITE); // Set text color to white
+        logoutButton.setFont(buttonFont);
+        logoutButton.setBackground(new Color(23, 110, 45)); // Background color
+        logoutButton.setForeground(Color.WHITE); // Text color
         logoutButton.setFocusPainted(false); // Remove focus border
-        logoutButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding inside the button
+        logoutButton.setBorder(buttonBorder); // Increased padding for larger size
+        logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Hand cursor on hover
+        logoutButton.setContentAreaFilled(false); // Remove default button look
+        logoutButton.setOpaque(true); // Enable custom background
+        logoutButton.setBorder(BorderFactory.createLineBorder(borderColor, 4, true)); // Rounded border with white outline
         logoutButton.addActionListener(new LogoutButtonListener());
 
+
+        // Add hover effect for Logout button
+        logoutButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(hoverColor); // Change to hover color
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(new Color(23, 110, 45)); // Revert to original color
+            }
+        });
+
+        // Add buttons to the panel
         buttonPanel.add(backButton);
         buttonPanel.add(logoutButton);
 
+        // Add button panel to the frame
         gbc.gridy = 1;
         backgroundPanel.add(buttonPanel, gbc);
 
+        // Show the frame
         howToPlayFrame.setVisible(true);
+
+
     }
 
     // Custom JPanel to draw the background image
@@ -115,7 +163,7 @@ public class ShapeHowToPlay {
         }
     }
 
-    private class LogoutButtonListener implements ActionListener {
+    class LogoutButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             int choice = JOptionPane.showConfirmDialog(

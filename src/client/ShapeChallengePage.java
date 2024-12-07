@@ -21,11 +21,7 @@ public class ShapeChallengePage {
     {
         try {
             myService = (ScoreBoardInterface) Naming.lookup("rmi://localhost:1099/ScoreBoardService");
-        } catch (NotBoundException e) {
-            throw new RuntimeException(e);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             throw new RuntimeException(e);
         }
     }
@@ -51,8 +47,10 @@ public class ShapeChallengePage {
 
     int rows = 4;
     int columns = 5;
-    int cardWidth = 120;
-    int cardHeight = 200;
+    int cardWidth = 200;
+    int cardHeight = 50;
+    int cardWidth1 = 350;
+    int cardHeight1 =200;
 
     ArrayList<Card> cardSet;
     ImageIcon cardBackImageIcon;
@@ -85,11 +83,12 @@ public class ShapeChallengePage {
         setupCards();
         shuffleCards();
 
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(true);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximizes the frame
+        frame.setUndecorated(false); // Set to true if you want no window decorations
+        frame.setLocationRelativeTo(null);
 
         textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -262,6 +261,7 @@ public class ShapeChallengePage {
             );
 
             if (choice == JOptionPane.OK_OPTION) {
+                gameTimer.stop();
                 frame.dispose(); // Close current game frame
                 new ShapeChallengeHome(); // Open new instance for the home page
             }
@@ -315,8 +315,8 @@ public class ShapeChallengePage {
         cardSet.addAll(cardSet); // Double the deck
 
         // Load the back card image with square dimensions
-        Image cardBackImg = new ImageIcon(getClass().getResource("../img/back.jpg")).getImage();
-        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
+        Image cardBackImg = new ImageIcon(getClass().getResource("../img/ShapeBackImage.jpg")).getImage();
+        cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth1, cardHeight1, java.awt.Image.SCALE_SMOOTH)); // Ensure it's scaling correctly
     }
 
     void shuffleCards() {

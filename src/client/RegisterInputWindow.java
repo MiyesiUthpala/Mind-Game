@@ -15,6 +15,12 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
     private static final long serialVersionUID = 1L;
     private JTextField usernameField;
     private JPasswordField passwordField;
+
+    private JTextField last_nameField;
+
+    private JTextField first_nameField;
+
+    private JTextField emailField;
     private JButton registerButton;
     private JButton loginButton;
     private RegisterInterface myService;
@@ -33,7 +39,7 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
         }
 
         // Set the background image
-        ImageIcon originalIcon = new ImageIcon(HomePage.imagePath+"/background.jpg");
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("../img/background/register.jpg"));
         Image scaledImage = originalIcon.getImage().getScaledInstance(
                 Toolkit.getDefaultToolkit().getScreenSize().width,
                 Toolkit.getDefaultToolkit().getScreenSize().height,
@@ -55,12 +61,21 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
         // Configure the main formBox
         JPanel formBox = new JPanel();
         formBox.setLayout(new BoxLayout(formBox, BoxLayout.Y_AXIS));
-        formBox.setBackground(new Color(255, 255, 255, 150)); // Semi-transparent white
+        formBox.setBackground(new Color(255, 255, 255, 239)); // Semi-transparent white
         formBox.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding around the box
 
         // Add formBox to shadowBox
         shadowBox.add(formBox, BorderLayout.CENTER);
-        formBox.setPreferredSize(new Dimension(800, 420));
+        formBox.setPreferredSize(new Dimension(900, 650));
+
+        first_nameField = new JTextField(40);
+        first_nameField.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        last_nameField = new JTextField(40);
+        last_nameField.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        emailField = new JTextField(40);
+        emailField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         // Add username and password fields
         usernameField = new JTextField(40);
@@ -69,7 +84,20 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
         passwordField = new JPasswordField(40);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
 
-        formBox.add(createLabelCenter("<html><b style=\"font-size: 22px; display: block; text-align: center;\">Register</b></html>\n"));
+        // Add username and password fields
+        formBox.add(createLabelCenter("<html><b style=\"font-size: 22px; display: block; text-align: center;\">Register</b></html>"));
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(createLabel("<html><b style=\"font-size: 18px;\">First Name:</b></html>"));
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(first_nameField);
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(createLabel("<html><b style=\"font-size: 18px;\">Last Name:</b></html>"));
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(last_nameField);
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(createLabel("<html><b style=\"font-size: 18px;\">Email Address:</b></html>"));
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(emailField);
         formBox.add(Box.createVerticalStrut(20));
         formBox.add(createLabel("<html><b style=\"font-size: 18px;\">User Name:</b></html>"));
         formBox.add(Box.createVerticalStrut(20));
@@ -80,25 +108,26 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
         formBox.add(passwordField);
         formBox.add(Box.createVerticalStrut(20));
 
+        // Create a new JPanel for buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0)); // 10px gap between buttons
+        buttonPanel.setOpaque(false); // Make transparent to blend with background
+
+        // Register Button
         registerButton = createStyledButton("Register", "<html><b style='font-size:16px; color:white;'>Register</b></html>");
-        // Adjust button size (shorter height)
-        registerButton.setPreferredSize(new Dimension(150, 40)); // Width: 150px, Height: 40px
-        registerButton.setMaximumSize(new Dimension(150, 40));   // Optional: limit max size
-        registerButton.setMinimumSize(new Dimension(150, 40));  // Optional: limit min size
-        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        registerButton.setPreferredSize(new Dimension(150, 40));
         registerButton.addActionListener(this);
+        buttonPanel.add(registerButton); // Add to panel
 
+        // Login Button
         loginButton = createStyledButton("Login", "<html><b style='font-size:16px; color:white;'>Login</b></html>");
-        // Adjust button size (shorter height)
-        loginButton.setPreferredSize(new Dimension(150, 40)); // Width: 150px, Height: 40px
-        loginButton.setMaximumSize(new Dimension(150, 40));   // Optional: limit max size
-        loginButton.setMinimumSize(new Dimension(150, 40));  // Optional: limit min size
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginButton.setPreferredSize(new Dimension(150, 40));
         loginButton.addActionListener(this);
+        buttonPanel.add(loginButton); // Add to panel
 
-        formBox.add(registerButton);
-        formBox.add(Box.createVerticalStrut(20));
-        formBox.add(loginButton);
+        // Add button panel to the formBox
+        formBox.add(Box.createVerticalStrut(20)); // Add spacing above buttons
+        formBox.add(buttonPanel); // Add the button panel
+
 
         containerPanel.add(formBox);
         setContentPane(background);
@@ -131,14 +160,18 @@ public class RegisterInputWindow extends JFrame implements ActionListener{
         if (e.getSource().equals(registerButton)) {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
+            String first_name = (first_nameField.getText().trim());
+            String last_name = (last_nameField.getText());
+            String email = (emailField.getText());
 
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username and Password cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+
+            if (username.isEmpty() || password.isEmpty() || first_name.isEmpty() || last_name.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Fields cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
             try {
-                String result = myService.register(username, password);
+                String result = myService.register( username,  password, first_name, last_name, email);
 
                 if (result.startsWith("error#")) {
                     JOptionPane.showMessageDialog(this, result.substring(6), "Register Error", JOptionPane.ERROR_MESSAGE);

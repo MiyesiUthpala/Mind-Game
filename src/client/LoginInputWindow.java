@@ -15,6 +15,7 @@ public class LoginInputWindow extends JFrame implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private JButton registerButton;
     private LoginInterface myService;
 
     public LoginInputWindow() {
@@ -31,7 +32,7 @@ public class LoginInputWindow extends JFrame implements ActionListener {
         }
 
         // Set the background image
-        ImageIcon originalIcon = new ImageIcon("C:/Users/miyes/OneDrive/Documents/Mind Game/background.jpg");
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("../img/background/background.jpg"));
         Image scaledImage = originalIcon.getImage().getScaledInstance(
                 Toolkit.getDefaultToolkit().getScreenSize().width,
                 Toolkit.getDefaultToolkit().getScreenSize().height,
@@ -53,12 +54,12 @@ public class LoginInputWindow extends JFrame implements ActionListener {
         // Configure the main formBox
         JPanel formBox = new JPanel();
         formBox.setLayout(new BoxLayout(formBox, BoxLayout.Y_AXIS));
-        formBox.setBackground(new Color(255, 255, 255, 150)); // Semi-transparent white
+        formBox.setBackground(new Color(255, 255, 255, 208)); // Semi-transparent white
         formBox.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding around the box
 
         // Add formBox to shadowBox
         shadowBox.add(formBox, BorderLayout.CENTER);
-        formBox.setPreferredSize(new Dimension(800, 375));
+        formBox.setPreferredSize(new Dimension(800, 420));
 
         // Add username and password fields
         usernameField = new JTextField(40);
@@ -67,23 +68,39 @@ public class LoginInputWindow extends JFrame implements ActionListener {
         passwordField = new JPasswordField(40);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
 
-        formBox.add(createLabel("<html><b style=\"font-size: 20px;\">User Name:</b></html>"));
+        // Add username and password fields
+        formBox.add(createLabelCenter("<html><b style=\"font-size: 22px; display: block; text-align: center;\">Login</b></html>"));
+        formBox.add(Box.createVerticalStrut(20));
+        formBox.add(createLabel("<html><b style=\"font-size: 18px;\">User Name:</b></html>"));
         formBox.add(Box.createVerticalStrut(20));
         formBox.add(usernameField);
         formBox.add(Box.createVerticalStrut(20));
-        formBox.add(createLabel("<html><b style=\"font-size: 20px;\">Password:</b></html>"));
+        formBox.add(createLabel("<html><b style=\"font-size: 18px;\">Password:</b></html>"));
         formBox.add(Box.createVerticalStrut(20));
         formBox.add(passwordField);
         formBox.add(Box.createVerticalStrut(20));
 
+        // Create a new JPanel for buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0)); // 10px gap between buttons
+        buttonPanel.setOpaque(false); // Make transparent to blend with background
+
+
+        // Login Button
         loginButton = createStyledButton("Login", "<html><b style='font-size:16px; color:white;'>Login</b></html>");
-        // Adjust button size (shorter height)
-        loginButton.setPreferredSize(new Dimension(150, 40)); // Width: 150px, Height: 40px
-        loginButton.setMaximumSize(new Dimension(150, 40));   // Optional: limit max size
-        loginButton.setMinimumSize(new Dimension(150, 40));  // Optional: limit min size
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginButton.setPreferredSize(new Dimension(150, 40));
         loginButton.addActionListener(this);
-        formBox.add(loginButton);
+        buttonPanel.add(loginButton); // Add to panel
+
+        // Register Button
+        registerButton = createStyledButton("Register", "<html><b style='font-size:16px; color:white;'>Register</b></html>");
+        registerButton.setPreferredSize(new Dimension(150, 40));
+        registerButton.addActionListener(this);
+        buttonPanel.add(registerButton); // Add to panel
+
+        // Add button panel to the formBox
+        formBox.add(Box.createVerticalStrut(20)); // Add spacing above buttons
+        formBox.add(buttonPanel); // Add the button panel
+
 
         containerPanel.add(formBox);
         setContentPane(background);
@@ -93,6 +110,12 @@ public class LoginInputWindow extends JFrame implements ActionListener {
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
+    }
+
+    private JLabel createLabelCenter(String text) {
+        JLabel label = new JLabel(text, JLabel.CENTER); // Center-align the text
+        label.setAlignmentX(Component.CENTER_ALIGNMENT); // Align the label itself to the center
         return label;
     }
 
@@ -130,6 +153,11 @@ public class LoginInputWindow extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Error occurred during login.", "Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
+        } else if (e.getSource().equals(registerButton))
+        {
+            RegisterInputWindow registerInputWindow = new RegisterInputWindow();
+            registerInputWindow.setVisible(true);
+            this.dispose(); // Close the current page
         }
     }
 }
